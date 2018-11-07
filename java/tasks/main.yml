@@ -1,11 +1,15 @@
 ---
 # tasks file for java
+ - name: detecting Home directory
+   shell: echo $HOME
+   register: home_dir
+
  - name: copying JAVA oracle package to remote host
    copy:
         src: "{{java_package}}"
-        dest: "{{path}}"
-        mode: 0700
-   become: yes
+        dest: "{{home_dir.stdout}}/{{path}}"
+        mode: 0611
+
 
  - name: "creating java folder under {{destination}}"
    file:
@@ -15,7 +19,7 @@
 
  - name: Unarchiving java package
    unarchive:
-            src: "{{path}}/{{java_package_name}}"
+            src: "{{home_dir.stdout}}/{{path}}/{{java_package_name}}"
             dest: "{{destination}}/java"
             copy: no
    become: yes
@@ -34,7 +38,7 @@
    when: isJavaSucc.stdout == "0"
 
  - name: testing if java is already enabled
-   shell: grep JAVA_HOME "{{ '~' | expanduser }}/.bashrc"  | wc -l
+   shell: grep JAVA_HOME "{{home_dir.stdout}}/.bashrc"  | wc -l
    register: isJAVA_HOMEThere
    become: yes
 
@@ -43,7 +47,7 @@
 
  - name: Adding JAVA_HOME to ~/.bashrc (1/2)
    lineinfile:
-           path: "{{ '~' | expanduser }}/.bashrc"
+           path: "{{home_dir.stdout}}/.bashrc"
            line: "{{item}}"
    with_items:
           - "###########JAVA 8###############"

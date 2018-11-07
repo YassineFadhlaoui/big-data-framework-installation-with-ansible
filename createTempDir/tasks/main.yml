@@ -8,4 +8,4 @@
   file:
       path: "{{ home_dir.stdout }}/{{folder_name}}"
       state: directory
-      mode: 0700
+      mode: 0711

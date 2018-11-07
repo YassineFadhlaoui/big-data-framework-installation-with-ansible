@@ -21,11 +21,11 @@
           vars:
             folder_name: "{{Temprory_folder_name}}"
         # Install and configure java we use here the role java
-        # Java will be installed under /usr/local/java/jdk1.8.0_101
+        # Java will be installed under /usr/local/java/jdk1.8.0_191
         - role: java
           vars:
             java_package: "{{Common_packages}}/{{JAVA_archive}}"
-            path: "{{ '~' | expanduser }}/{{Temprory_folder_name}}"
+            path: "{{Temprory_folder_name}}"
             destination: "{{Framework_location}}"
             java_package_name: "{{JAVA_archive}}"
             java_version: "{{JAVA_version}}"
