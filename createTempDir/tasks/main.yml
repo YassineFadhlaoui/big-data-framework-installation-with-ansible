@@ -1,0 +1,11 @@
+---
+# tasks file for createTempDir
+- name: detecting Home directory
+  shell: echo $HOME
+  register: home_dir
+
+- name: "preparing temprory folder for packages {{ home_dir.stdout }}/{{folder_name}}"
+  file:
+      path: "{{ home_dir.stdout }}/{{folder_name}}"
+      state: directory
+      mode: 0700

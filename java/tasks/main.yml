@@ -1,0 +1,54 @@
+---
+# tasks file for java
+ - name: copying JAVA oracle package to remote host
+   copy:
+        src: "{{java_package}}"
+        dest: "{{path}}"
+        mode: 0700
+   become: yes
+
+ - name: "creating java folder under {{destination}}"
+   file:
+       path: "{{destination}}/java"
+       state: directory
+   become: yes
+
+ - name: Unarchiving java package
+   unarchive:
+            src: "{{path}}/{{java_package_name}}"
+            dest: "{{destination}}/java"
+            copy: no
+   become: yes
+
+ - name: Telling the system about the new java installation
+   shell: update-alternatives --install "/usr/bin/java" "java" "{{destination}}/java/{{java_version}}/bin/java" 1
+   become: yes
+
+ - name: Testing the java installation
+   shell: java -version && echo $?
+   register: isJavaSucc
+
+
+ - name: Java installation notification
+   debug: msg="java is successfully installed "
+   when: isJavaSucc.stdout == "0"
+
+ - name: testing if java is already enabled
+   shell: grep JAVA_HOME "{{ '~' | expanduser }}/.bashrc"  | wc -l
+   register: isJAVA_HOMEThere
+   become: yes
+
+ - name: Java installation notification
+   debug: msg="{{isJAVA_HOMEThere.stdout}}"
+
+ - name: Adding JAVA_HOME to ~/.bashrc (1/2)
+   lineinfile:
+           path: "{{ '~' | expanduser }}/.bashrc"
+           line: "{{item}}"
+   with_items:
+          - "###########JAVA 8###############"
+          - "export JAVA_HOME={{destination}}/java/{{java_version}}"
+          - "export PATH=$JAVA_HOME/bin:$PATH"
+          - "###############################"
+   become: yes
+   when: isJAVA_HOMEThere.stdout == "0"

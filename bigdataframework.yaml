@@ -1,0 +1,31 @@
+---
+  - name: install and configure a big data framework (Hadoop, Hbase, OpenTSDB and Grafana)
+    hosts: bigdataframework
+    vars:
+      IP_address: localhost
+      Common_packages: "{{ lookup('env', 'PWD') }}/packages/"
+      Hadoop_archive: "hadoop-3.1.1.tar.gz"
+      Hbase_archive: "hbase-1.4.8-bin.tar.gz"
+      OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
+      Grafana_deb: "grafana_5.1.4_amd64.deb"
+      JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
+      JAVA_version: jdk1.8.0_191
+      Framework_location: "/usr/local"
+      Temprory_folder_name: "BigDataFrameworkPackages"
+
+#This is modular tempalte, every minor task is written separately in a role
+
+    roles:
+        # Create a temprory directory to copy packages to it
+        - role: createTempDir
+          vars:
+            folder_name: "{{Temprory_folder_name}}"
+        # Install and configure java we use here the role java
+        # Java will be installed under /usr/local/java/jdk1.8.0_101
+        - role: java
+          vars:
+            java_package: "{{Common_packages}}/{{JAVA_archive}}"
+            path: "{{ '~' | expanduser }}/{{Temprory_folder_name}}"
+            destination: "{{Framework_location}}"
+            java_package_name: "{{JAVA_archive}}"
+            java_version: "{{JAVA_version}}"
