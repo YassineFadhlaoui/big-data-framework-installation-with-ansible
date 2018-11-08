@@ -1,0 +1,8 @@
+#ACL for the emsServer user
+user emsServer
+topic read #
+
+#ACL for the IoT gateways
+user iotDevice
+topic write #
+

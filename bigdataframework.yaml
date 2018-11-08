@@ -4,6 +4,9 @@
     vars:
       IP_address: localhost
       Common_packages: "{{ lookup('env', 'PWD') }}/packages/"
+      Ansible_root: "{{ lookup('env', 'PWD') }}"
+      vernemq_config: "conf/vernemq"
+      vernemq_conf_path: "{{Ansible_root}}/{{vernemq_config}}"
       Hadoop_archive: "hadoop-3.1.1.tar.gz"
       Hbase_archive: "hbase-1.4.8-bin.tar.gz"
       OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
@@ -12,6 +15,7 @@
       JAVA_version: jdk1.8.0_191
       Framework_location: "/usr/local"
       Temprory_folder_name: "BigDataFrameworkPackages"
+
 
 #This is modular tempalte, every minor task is written separately in a role
 
@@ -22,10 +26,33 @@
             folder_name: "{{Temprory_folder_name}}"
         # Install and configure java we use here the role java
         # Java will be installed under /usr/local/java/jdk1.8.0_191
-        - role: java
+
+        #- role: java
+        #  vars:
+        #    java_package: "{{Common_packages}}/{{JAVA_archive}}"
+        #    path: "{{Temprory_folder_name}}"
+        #    destination: "{{Framework_location}}"
+        #    java_package_name: "{{JAVA_archive}}"
+        #    java_version: "{{JAVA_version}}"
+
+        #--------------------------End Java installation--------------------------
+
+        - role: vernemq
           vars:
-            java_package: "{{Common_packages}}/{{JAVA_archive}}"
-            path: "{{Temprory_folder_name}}"
-            destination: "{{Framework_location}}"
-            java_package_name: "{{JAVA_archive}}"
-            java_version: "{{JAVA_version}}"
+            vernemq_package_destination: "{{Temprory_folder_name}}"
+            vcert_source: "{{vernemq_conf_path}}/ssl/ca.crt"
+            vcert_destination: "/etc/ssl/"
+            vkey_source: "{{vernemq_conf_path}}/ssl/server.key"
+            vkey_destination: "/etc/ssl/"
+            vserver_cert_source: "{{vernemq_conf_path}}/ssl/server.crt"
+            vserver_cert_destination:  "/etc/ssl/"
+            vconfig_source: "{{vernemq_conf_path}}/vernemq.conf"
+            vconfig_destination: "/etc/vernemq/vernemq.conf"
+            vacl_source: "{{vernemq_conf_path}}/vmq.acl"
+            vacl_destination: "/etc/vernemq/vmq.acl"
+            vpasswd_source: "{{vernemq_conf_path}}/vmq.passwd"
+            vpasswd_destination: "/etc/vernemq/vmq.passwd"
+
+    environment:
+      http_proxy: http://172.16.1.2:8080
+      https_proxy: https://172.16.1.2:8080

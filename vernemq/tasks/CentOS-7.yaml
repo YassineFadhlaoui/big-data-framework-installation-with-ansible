@@ -1,0 +1,6 @@
+---
+  - name: "Downloading vernemq for {{ansible_distribution}}-{{ ansible_distribution_major_version}}"
+    get_url:
+      url: https://bintray.com/artifact/download/erlio/vernemq/rpm/centos7/vernemq-1.6.1-1.el7.x86_64.rpm
+      dest: "{{ vernemq_rpm }}"
+      validate_certs: false

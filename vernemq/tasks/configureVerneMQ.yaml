@@ -1,0 +1,58 @@
+---
+
+  - name: Copying self signed certificate to remotedestination
+    copy:
+        src: "{{cert_source}}"
+        dest: "{{cert_destination}}"
+        owner: root
+        group: root
+        mode: 0644
+    become: yes
+
+  - name: Copying server key to remote destination
+    copy:
+        src: "{{key_source}}"
+        dest: "{{key_destination}}"
+        owner: root
+        group: root
+        mode: 0644
+    become: yes
+
+  - name: Copying server certificate to remote destination
+    copy:
+        src: "{{server_cert_source}}"
+        dest: "{{server_cert_destination}}"
+        owner: root
+        group: root
+        mode: 0644
+    become: yes
+
+  - name: Copying ACL file to verneMQ
+    copy:
+        src: "{{acl_source}}"
+        dest: "{{acl_destination}}"
+        owner: root
+        group: root
+        mode: 0644
+    become: yes
+
+  - name: Copying passwd file to verneMQ
+    copy:
+        src: "{{passwd_source}}"
+        dest: "{{passwd_destination}}"
+        owner: root
+        group: root
+        mode: 0644
+    become: yes
+
+  - name: Configuring verneMQ
+    copy:
+        src: "{{config_source}}"
+        dest: "{{config_destination}}"
+        owner: root
+        group: root
+        mode: 0644
+        force: yes
+    notify:
+      - restart vernemq
+    become: yes

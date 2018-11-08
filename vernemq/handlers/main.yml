@@ -1,0 +1,7 @@
+---
+# handlers file for vernemq
+  - name: restart vernemq
+    service:
+      name: vernemq
+      state: restarted
+    become: yes

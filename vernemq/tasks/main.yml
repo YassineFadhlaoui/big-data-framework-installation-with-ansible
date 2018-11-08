@@ -1,0 +1,76 @@
+---
+# tasks file for vernemq
+ - name: detecting Home directory
+   shell: echo $HOME
+   register: home_dir
+
+ - name: detecting system distribution
+   debug: msg=" OS family detected {{ansible_distribution}}-{{ ansible_distribution_major_version}}"
+
+ - include: CentOS-7.yaml
+   vars:
+     vernemq_rpm: "{{home_dir.stdout}}/{{vernemq_package_destination}}"
+   when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+
+ - include: Ubuntu-16.yaml
+   vars:
+     vernemq_deb: "{{home_dir.stdout}}/{{vernemq_package_destination}}"
+   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == '16'
+
+ - include: Ubuntu-18.yaml
+   vars:
+     vernemq_deb: "{{home_dir.stdout}}/{{vernemq_package_destination}}"
+   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == '18'
+
+ - name: "Installing vernemq package for Ubuntu"
+   apt:
+    deb:  "{{home_dir.stdout}}/{{vernemq_package_destination}}/vernemq_1.6.1-1_amd64.deb"
+    state: present
+   when: ansible_distribution == "Ubuntu"
+   become: yes
+
+
+ - name: "Installing vernemq package for Redhat "
+   yum:
+    name:  "{{home_dir.stdout}}/{{vernemq_package_destination}}/vernemq-1.6.1-1.el7.x86_64.rpm"
+    validate_certs: false
+   when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+   become: yes
+
+ - name: Enable service vernemq
+   service:
+     name: vernemq
+     enabled: yes
+   become: yes
+
+ - name: Start service vernemq
+   service:
+     name: vernemq
+     state: started
+   become: yes
+
+ - name: getting vernemq daemon status
+   shell: systemctl status vernemq
+   register: vernemq_status
+
+ - name: testing service VerneMQ status
+   debug: msg="VerneMQ is running"
+   when: vernemq_status.stdout.find("active") != -1
+
+ - name: testing service VerneMQ status
+   debug: msg="VerneMQ is not running"
+   when: vernemq_status.stdout.find("active") == -1
+ - include: configureVerneMQ.yaml
+   vars:
+     cert_source: "{{vcert_source}}"
+     cert_destination: "{{vcert_destination}}"
+     key_source: "{{vkey_source}}"
+     key_destination: "{{vkey_destination}}"
+     server_cert_source: "{{vserver_cert_source}}"
+     server_cert_destination: "{{vserver_cert_destination}}"
+     config_source: "{{ vconfig_source }}"
+     config_destination: "{{vconfig_destination}}"
+     acl_source: "{{vacl_source}}"
+     acl_destination: "{{vacl_destination}}"
+     passwd_source: "{{vpasswd_source}}"
+     passwd_destination: "{{vpasswd_destination}}"
