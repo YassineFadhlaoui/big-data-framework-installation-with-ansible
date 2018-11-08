@@ -5,9 +5,11 @@
       IP_address: localhost
       Common_packages: "{{ lookup('env', 'PWD') }}/packages/"
       Ansible_root: "{{ lookup('env', 'PWD') }}"
+      hadoop_conf: "conf/hadoop"
       vernemq_config: "conf/vernemq"
       vernemq_conf_path: "{{Ansible_root}}/{{vernemq_config}}"
       Hadoop_archive: "hadoop-3.1.1.tar.gz"
+      Uncompressed_hadoop: "hadoop-3.1.1"
       Hbase_archive: "hbase-1.4.8-bin.tar.gz"
       OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
       Grafana_deb: "grafana_5.1.4_amd64.deb"
@@ -15,6 +17,8 @@
       JAVA_version: jdk1.8.0_191
       Framework_location: "/usr/local"
       Temprory_folder_name: "BigDataFrameworkPackages"
+      linux_user: "yassine"
+      user_group: "yassine"
 
 
 #This is modular tempalte, every minor task is written separately in a role
@@ -26,7 +30,7 @@
             folder_name: "{{Temprory_folder_name}}"
         # Install and configure java we use here the role java
         # Java will be installed under /usr/local/java/jdk1.8.0_191
-
+        #--------------------------Begin JAVA installation------------------------
         #- role: java
         #  vars:
         #    java_package: "{{Common_packages}}/{{JAVA_archive}}"
@@ -36,23 +40,36 @@
         #    java_version: "{{JAVA_version}}"
 
         #--------------------------End Java installation--------------------------
-
-        - role: vernemq
+        #--------------------------Begin VERNEMQ installation------------------------
+        #- role: vernemq
+        #  vars:
+        #    vernemq_package_destination: "{{Temprory_folder_name}}"
+        #    vcert_source: "{{vernemq_conf_path}}/ssl/ca.crt"
+        #    vcert_destination: "/etc/ssl/"
+        #    vkey_source: "{{vernemq_conf_path}}/ssl/server.key"
+        #    vkey_destination: "/etc/ssl/"
+        #    vserver_cert_source: "{{vernemq_conf_path}}/ssl/server.crt"
+        #    vserver_cert_destination:  "/etc/ssl/"
+        #    vconfig_source: "{{vernemq_conf_path}}/vernemq.conf"
+        #    vconfig_destination: "/etc/vernemq/vernemq.conf"
+        #    vacl_source: "{{vernemq_conf_path}}/vmq.acl"
+        #    vacl_destination: "/etc/vernemq/vmq.acl"
+        #    vpasswd_source: "{{vernemq_conf_path}}/vmq.passwd"
+        #    vpasswd_destination: "/etc/vernemq/vmq.passwd"
+        #--------------------------End Verne MQ installation------------------------
+        #--------------------------Begin Hadoop installation------------------------
+        - role: hadoop
           vars:
-            vernemq_package_destination: "{{Temprory_folder_name}}"
-            vcert_source: "{{vernemq_conf_path}}/ssl/ca.crt"
-            vcert_destination: "/etc/ssl/"
-            vkey_source: "{{vernemq_conf_path}}/ssl/server.key"
-            vkey_destination: "/etc/ssl/"
-            vserver_cert_source: "{{vernemq_conf_path}}/ssl/server.crt"
-            vserver_cert_destination:  "/etc/ssl/"
-            vconfig_source: "{{vernemq_conf_path}}/vernemq.conf"
-            vconfig_destination: "/etc/vernemq/vernemq.conf"
-            vacl_source: "{{vernemq_conf_path}}/vmq.acl"
-            vacl_destination: "/etc/vernemq/vmq.acl"
-            vpasswd_source: "{{vernemq_conf_path}}/vmq.passwd"
-            vpasswd_destination: "/etc/vernemq/vmq.passwd"
-
+            framework_base:  "{{Framework_location}}"
+            hadoop_package: "{{Hadoop_archive}}"
+            hadoop_source: "{{Common_packages}}/{{Hadoop_archive}}"
+            hadoop_destination: "{{Temprory_folder_name}}"
+            path_to_Hadoop: "{{Temprory_folder_name}}"
+            Uncompressed_hadoop_folder: "{{Uncompressed_hadoop}}"
+            hadoop_owner: "{{linux_user}}"
+            hadoop_group: "{{user_group}}"
+            config_location: "{{Ansible_root}}/{{hadoop_conf}}"
+        #--------------------------End Hadoop installation--------------------------
     environment:
       http_proxy: http://172.16.1.2:8080
       https_proxy: https://172.16.1.2:8080

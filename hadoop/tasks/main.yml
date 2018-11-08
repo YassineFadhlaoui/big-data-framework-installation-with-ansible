@@ -1,2 +1,120 @@
 ---
 # tasks file for hadoop
+ - name:               detecting Home directory
+   shell:              echo $HOME
+   register:           home_dir
+
+
+ # - name:             "copying {{hadoop_package}} to remote host"
+ #   copy:
+ #    src:             "{{hadoop_source}}"
+ #    dest:            "{{hadoop_destination}}"
+ #    mode:            0644
+ #
+ # - name:             "decompressing {{hadoop_package}}"
+ #   unarchive:
+ #      src:           "{{home_dir.stdout}}/{{path_to_Hadoop}}/{{hadoop_package}}"
+ #      dest:          "{{framework_base}}"
+ #      copy:          no
+ #      owner:         "{{hadoop_owner}}"
+ #      group:         "{{hadoop_group}}"
+ #   become:           yes
+ #
+ # - name:             "Renaming folder {{Uncompressed_hadoop_folder}} to hadoop"
+ #   shell:            "mv {{framework_base}}/{{Uncompressed_hadoop_folder}} {{framework_base}}/hadoop"
+ #   become:           yes
+
+ - name:               testing if hadoop is already enabled
+   shell:              grep HADOOP_HOME "{{home_dir.stdout}}/.bashrc"  | wc -l
+   register:           isHADOOP_HOMEThere
+   become:             yes
+
+ - name:               Hadoop installation notification
+   debug:              msg="{{isHADOOP_HOMEThere.stdout}}"
+
+ - name:               "Adding Hadoop variables to .bashrc"
+   lineinfile:
+          path:        "{{home_dir.stdout}}/.bashrc"
+          line:        "{{item}}"
+   with_items:
+         - "###########Hadoop installation###############"
+         - "export HADOOP_HOME={{framework_base}}/hadoop"
+         - "export HADOOP_CONF_DIR={{framework_base}}/hadoop/etc/hadoop"
+         - "export HADOOP_MAPRED_HOME={{framework_base}}/hadoop"
+         - "export HADOOP_HDFS_HOME={{framework_base}}/hadoop"
+         - "export YARN_HOME={{framework_base}}/hadoop"
+         - "export PATH=$PATH:{{framework_base}}/hadoop/bin:$HADOOP_HOME/sbin"
+         - "############## End Hadoop variables#################"
+   become:             yes
+   when:               isHADOOP_HOMEThere.stdout == "0"
+
+
+ - block:
+    - name: "Check if datanode folder is created"
+      stat:
+       path: "{{item}}"
+      register: hadoop_folder_stats
+      with_items:
+      - "{{home_dir.stdout}}/Hadoop"
+      - "{{home_dir.stdout}}/Hadoop/hdfs"
+      - "{{home_dir.stdout}}/Hadoop/hdfs/datanode"
+      - "{{home_dir.stdout}}/Hadoop/hdfs/namenode"
+
+    - name: "Creating folders for hadoop datanode and hadoop namenode"
+      file:
+       path: "{{item.item}}"
+       state: directory
+       mode: 0777
+       owner: "{{hadoop_owner}}"
+       group: "{{hadoop_group}}"
+      when: item.stat.exists == false
+      with_items:
+      - "{{hadoop_folder_stats.results}}"
+
+ - name: "datanode folder name"
+   shell: "echo {{home_dir.stdout}}/Hadoop/hdfs/datanode"
+   register: datanode_dir
+
+ - name: "namenode folder name"
+   shell: "echo {{home_dir.stdout}}/Hadoop/hdfs/namenode"
+   register: namenode_dir
+## configure hadoop dynamically using jinja templates
+ - name: copying core-site.xml
+   copy:
+    src: "{{ item }}"
+    dest: "{{framework_base}}/hadoop/etc/hadoop/"
+    owner: "{{hadoop_owner}}"
+    group: "{{hadoop_group}}"
+    mode: 0644
+    force: yes
+   with_items:
+    - "{{config_location}}/core-site.xml"
+    - "{{config_location}}/mapred-site.xml"
+    - "{{config_location}}/yarn-site.xml"
+   become: yes
+
+ - name: "dynamic hdfs site configuration"
+   template:
+    src: "{{config_location}}/hdfs-site.j2"
+    dest:  "{{framework_base}}/hadoop/etc/hadoop/hdfs-site.xml"
+    owner: "{{hadoop_owner}}"
+    group: "{{hadoop_group}}"
+    mode: 0644
+
+ - name: "Check if id_rsa is present at {{home_dir.stdout}}/.ssh/."
+   stat:
+      path: "{{home_dir.stdout}}/.ssh/id_rsa"
+   register: rsa_key
+
+ - name: "Connecting to localhost without passphrase"
+   shell: "ssh-keygen -t rsa -P '' -f {{home_dir.stdout}}/.ssh/id_rsa"
+   when: rsa_key.stat.exists == False
+
+ - name: "add the generated key to authorized_keys"
+   shell: "cat {{home_dir.stdout}}/.ssh/id_rsa.pub >> {{home_dir.stdout}}/.ssh/authorized_keys"
+   when: rsa_key.stat.exists == False
+
+ - name: "Configuring Hadoop map reduce (1/2)"
+   shell: "grep mapreduce.framework {{framework_base}}/hadoop/etc/hadoop/mapred-site.xm  | wc -l"
+   register: isMapredThere
+   become:  yes
