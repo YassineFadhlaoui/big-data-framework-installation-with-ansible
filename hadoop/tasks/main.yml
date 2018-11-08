@@ -118,3 +118,15 @@
    shell: "grep mapreduce.framework {{framework_base}}/hadoop/etc/hadoop/mapred-site.xm  | wc -l"
    register: isMapredThere
    become:  yes
+ - name: "testing if java  home is set"
+   shell: "cat {{framework_base}}/hadoop/etc/hadoop/hadoop-env.sh | grep -v ^# | grep JAVA_HOME | wc -l"
+   register: isJAVAHomeset
+
+ - name: adding java home
+   lineinfile:
+    path: "{{framework_base}}/hadoop/etc/hadoop/hadoop-env.sh"
+    line: "export JAVA_HOME={{java_home}}"
+    owner: "{{hadoop_owner}}"
+    group: "{{hadoop_group}}"
+    mode: 0755
+   when: isJAVAHomeset.stdout == "0"

@@ -69,6 +69,8 @@
             hadoop_owner: "{{linux_user}}"
             hadoop_group: "{{user_group}}"
             config_location: "{{Ansible_root}}/{{hadoop_conf}}"
+            java_home: "{{Framework_location}}/java/{{JAVA_version}}"
+
         #--------------------------End Hadoop installation--------------------------
     environment:
       http_proxy: http://172.16.1.2:8080
