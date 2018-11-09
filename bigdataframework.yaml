@@ -5,20 +5,33 @@
       IP_address: localhost
       Common_packages: "{{ lookup('env', 'PWD') }}/packages/"
       Ansible_root: "{{ lookup('env', 'PWD') }}"
-      hadoop_conf: "conf/hadoop"
-      vernemq_config: "conf/vernemq"
-      vernemq_conf_path: "{{Ansible_root}}/{{vernemq_config}}"
-      Hadoop_archive: "hadoop-3.1.1.tar.gz"
-      Uncompressed_hadoop: "hadoop-3.1.1"
-      Hbase_archive: "hbase-1.4.8-bin.tar.gz"
-      OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
-      Grafana_deb: "grafana_5.1.4_amd64.deb"
-      JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
-      JAVA_version: jdk1.8.0_191
       Framework_location: "/usr/local"
       Temprory_folder_name: "BigDataFrameworkPackages"
+
       linux_user: "yassine"
       user_group: "yassine"
+
+      vernemq_config: "conf/vernemq"
+      vernemq_conf_path: "{{Ansible_root}}/{{vernemq_config}}"
+
+      hadoop_conf: "conf/hadoop"
+      Hadoop_archive: "hadoop-3.1.1.tar.gz"
+      Uncompressed_hadoop: "hadoop-3.1.1"
+
+      Kafka_archive: "kafka_2.11-2.0.0.tgz"
+      Uncompressed_kafka: "kafka_2.11-2.0.0"
+      kafka_conf: "conf/kafka"
+
+      Hbase_archive: "hbase-1.4.8-bin.tar.gz"
+
+      OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
+
+      Grafana_deb: "grafana_5.1.4_amd64.deb"
+
+      JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
+      JAVA_version: jdk1.8.0_191
+
+
 
 
 #This is modular tempalte, every minor task is written separately in a role
@@ -31,13 +44,13 @@
         # Install and configure java we use here the role java
         # Java will be installed under /usr/local/java/jdk1.8.0_191
         #--------------------------Begin JAVA installation------------------------
-        - role: java
-          vars:
-            java_package: "{{Common_packages}}/{{JAVA_archive}}"
-            path: "{{Temprory_folder_name}}"
-            destination: "{{Framework_location}}"
-            java_package_name: "{{JAVA_archive}}"
-            java_version: "{{JAVA_version}}"
+        # - role: java
+        #   vars:
+        #     java_package: "{{Common_packages}}/{{JAVA_archive}}"
+        #     path: "{{Temprory_folder_name}}"
+        #     destination: "{{Framework_location}}"
+        #     java_package_name: "{{JAVA_archive}}"
+        #     java_version: "{{JAVA_version}}"
 
         #--------------------------End Java installation--------------------------
         #--------------------------Begin VERNEMQ installation------------------------
@@ -58,20 +71,35 @@
         #    vpasswd_destination: "/etc/vernemq/vmq.passwd"
         #--------------------------End Verne MQ installation------------------------
         #--------------------------Begin Hadoop installation------------------------
-        - role: hadoop
-          vars:
-            framework_base:  "{{Framework_location}}"
-            hadoop_package: "{{Hadoop_archive}}"
-            hadoop_source: "{{Common_packages}}/{{Hadoop_archive}}"
-            hadoop_destination: "{{Temprory_folder_name}}"
-            path_to_Hadoop: "{{Temprory_folder_name}}"
-            Uncompressed_hadoop_folder: "{{Uncompressed_hadoop}}"
-            hadoop_owner: "{{linux_user}}"
-            hadoop_group: "{{user_group}}"
-            config_location: "{{Ansible_root}}/{{hadoop_conf}}"
-            java_home: "{{Framework_location}}/java/{{JAVA_version}}"
+        #- role: hadoop
+        #  vars:
+        #    framework_base:  "{{Framework_location}}"
+        #    hadoop_package: "{{Hadoop_archive}}"
+        #    hadoop_source: "{{Common_packages}}/{{Hadoop_archive}}"
+        #    hadoop_destination: "{{Temprory_folder_name}}"
+        #    path_to_Hadoop: "{{Temprory_folder_name}}"
+        #    Uncompressed_hadoop_folder: "{{Uncompressed_hadoop}}"
+        #    hadoop_owner: "{{linux_user}}"
+        #    hadoop_group: "{{user_group}}"
+        #    config_location: "{{Ansible_root}}/{{hadoop_conf}}"
+        #    java_home: "{{Framework_location}}/java/{{JAVA_version}}"
 
         #--------------------------End Hadoop installation--------------------------
+        #--------------------------Begin kafka installation------------------------
+        - role: kafka
+          vars:
+            framework_base:  "{{Framework_location}}"
+            kafka_package: "{{Kafka_archive}}"
+            kafka_source: "{{Common_packages}}/{{Kafka_archive}}"
+            kafka_destination: "{{Temprory_folder_name}}"
+            path_to_kafka: "{{Temprory_folder_name}}"
+            Uncompressed_kafka_folder: "{{Uncompressed_kafka}}"
+            kafka_owner: "{{linux_user}}"
+            kafka_group: "{{user_group}}"
+            config_location: "{{Ansible_root}}/{{hadoop_conf}}"
+
+
+        #--------------------------End Kafka installation--------------------------
     environment:
       http_proxy: http://172.16.1.2:8080
       https_proxy: https://172.16.1.2:8080

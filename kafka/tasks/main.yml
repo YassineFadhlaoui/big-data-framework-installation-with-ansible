@@ -1,0 +1,24 @@
+---
+# tasks file for kafka
+ - name:               detecting Home directory
+   shell:              echo $HOME
+   register:           home_dir
+
+ - name: "copying {{kafka_package}} to remote host"
+   copy:
+       src:  "{{kafka_source}}"
+       dest: "{{kafka_destination}}"
+       mode: 0644
+
+ - name: "decompressing {{kafka_package}}"
+   unarchive:
+       src:           "{{home_dir.stdout}}/{{path_to_kafka}}/{{kafka_package}}"
+       dest:          "{{framework_base}}"
+       copy:          no
+       owner:         "{{kafka_owner}}"
+       group:         "{{kafka_group}}"
+   become:           yes
+ #
+ - name:             "Renaming folder {{Uncompressed_kafka_folder}} to kafka"
+   shell:            "mv {{framework_base}}/{{Uncompressed_kafka_folder}} {{framework_base}}/kafka"
+   become:           yes
