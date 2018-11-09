@@ -1,0 +1,11 @@
+
+
+[bigdataframework:children]
+ubuntu
+
+[ubuntu]
+192.168.43.169
+
+[ubuntu:vars]
+ansible_user=yassine
+ansible_python_interpreter=/usr/bin/python3

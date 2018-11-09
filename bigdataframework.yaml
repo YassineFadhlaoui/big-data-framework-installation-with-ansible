@@ -31,13 +31,13 @@
         # Install and configure java we use here the role java
         # Java will be installed under /usr/local/java/jdk1.8.0_191
         #--------------------------Begin JAVA installation------------------------
-        #- role: java
-        #  vars:
-        #    java_package: "{{Common_packages}}/{{JAVA_archive}}"
-        #    path: "{{Temprory_folder_name}}"
-        #    destination: "{{Framework_location}}"
-        #    java_package_name: "{{JAVA_archive}}"
-        #    java_version: "{{JAVA_version}}"
+        - role: java
+          vars:
+            java_package: "{{Common_packages}}/{{JAVA_archive}}"
+            path: "{{Temprory_folder_name}}"
+            destination: "{{Framework_location}}"
+            java_package_name: "{{JAVA_archive}}"
+            java_version: "{{JAVA_version}}"
 
         #--------------------------End Java installation--------------------------
         #--------------------------Begin VERNEMQ installation------------------------

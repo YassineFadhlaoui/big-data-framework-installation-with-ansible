@@ -5,24 +5,24 @@
    register:           home_dir
 
 
- # - name:             "copying {{hadoop_package}} to remote host"
- #   copy:
- #    src:             "{{hadoop_source}}"
- #    dest:            "{{hadoop_destination}}"
- #    mode:            0644
+ - name:             "copying {{hadoop_package}} to remote host"
+   copy:
+     src:             "{{hadoop_source}}"
+     dest:            "{{hadoop_destination}}"
+     mode:            0644
  #
- # - name:             "decompressing {{hadoop_package}}"
- #   unarchive:
- #      src:           "{{home_dir.stdout}}/{{path_to_Hadoop}}/{{hadoop_package}}"
- #      dest:          "{{framework_base}}"
- #      copy:          no
- #      owner:         "{{hadoop_owner}}"
- #      group:         "{{hadoop_group}}"
- #   become:           yes
+ - name:             "decompressing {{hadoop_package}}"
+   unarchive:
+       src:           "{{home_dir.stdout}}/{{path_to_Hadoop}}/{{hadoop_package}}"
+       dest:          "{{framework_base}}"
+       copy:          no
+       owner:         "{{hadoop_owner}}"
+       group:         "{{hadoop_group}}"
+   become:           yes
  #
- # - name:             "Renaming folder {{Uncompressed_hadoop_folder}} to hadoop"
- #   shell:            "mv {{framework_base}}/{{Uncompressed_hadoop_folder}} {{framework_base}}/hadoop"
- #   become:           yes
+ - name:             "Renaming folder {{Uncompressed_hadoop_folder}} to hadoop"
+   shell:            "mv {{framework_base}}/{{Uncompressed_hadoop_folder}} {{framework_base}}/hadoop"
+   become:           yes
 
  - name:               testing if hadoop is already enabled
    shell:              grep HADOOP_HOME "{{home_dir.stdout}}/.bashrc"  | wc -l
