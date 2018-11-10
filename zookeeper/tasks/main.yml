@@ -11,6 +11,7 @@
        dest: "{{zookeeper_destination}}"
        mode: 0644
 
+
  - name: "decompressing {{zookeeper_package}}"
    unarchive:
        src:           "{{home_dir.stdout}}/{{path_to_zookeeper}}/{{zookeeper_package}}"
