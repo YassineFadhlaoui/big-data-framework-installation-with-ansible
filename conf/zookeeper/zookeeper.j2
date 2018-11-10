@@ -1,0 +1,13 @@
+[Unit]
+Description=Zookeeper custom EMS daemon.
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User={{zookeeper_owner}}
+ExecStart={{framework_base}}/zookeeper/bin/zkServer.sh start
+
+[Install]
+WantedBy=multi-user.target

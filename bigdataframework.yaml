@@ -7,6 +7,7 @@
       Ansible_root: "{{ lookup('env', 'PWD') }}"
       Framework_location: "/usr/local"
       Temprory_folder_name: "BigDataFrameworkPackages"
+      OS_systemd_location: "/lib/systemd/system/"
 
       linux_user: "yassine"
       user_group: "yassine"
@@ -22,11 +23,17 @@
       Uncompressed_kafka: "kafka_2.11-2.0.0"
       kafka_conf: "conf/kafka"
 
+      zookeeper_archive: "zookeeper-3.4.13.tar.gz"
+      Uncompressed_zookeeper: "zookeeper-3.4.13"
+      zookeeper_conf: "conf/zookeeper"
+
       Hbase_archive: "hbase-1.4.8-bin.tar.gz"
 
       OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
 
-      Grafana_deb: "grafana_5.1.4_amd64.deb"
+      grafana_deb_name: "grafana_5.1.4_amd64.deb"
+      grafana_src_local: "{{Common_packages}}/{{grafana_deb_name}}"
+
 
       JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
       JAVA_version: jdk1.8.0_191
@@ -86,20 +93,44 @@
 
         #--------------------------End Hadoop installation--------------------------
         #--------------------------Begin kafka installation------------------------
-        - role: kafka
-          vars:
-            framework_base:  "{{Framework_location}}"
-            kafka_package: "{{Kafka_archive}}"
-            kafka_source: "{{Common_packages}}/{{Kafka_archive}}"
-            kafka_destination: "{{Temprory_folder_name}}"
-            path_to_kafka: "{{Temprory_folder_name}}"
-            Uncompressed_kafka_folder: "{{Uncompressed_kafka}}"
-            kafka_owner: "{{linux_user}}"
-            kafka_group: "{{user_group}}"
-            config_location: "{{Ansible_root}}/{{hadoop_conf}}"
+        # - role: kafka
+        #   vars:
+        #     framework_base:  "{{Framework_location}}"
+        #     kafka_package: "{{Kafka_archive}}"
+        #     kafka_source: "{{Common_packages}}/{{Kafka_archive}}"
+        #     kafka_destination: "{{Temprory_folder_name}}"
+        #     path_to_kafka: "{{Temprory_folder_name}}"
+        #     Uncompressed_kafka_folder: "{{Uncompressed_kafka}}"
+        #     kafka_owner: "{{linux_user}}"
+        #     kafka_group: "{{user_group}}"
+        #     config_location: "{{Ansible_root}}/{{kafka_conf}}"
 
 
         #--------------------------End Kafka installation--------------------------
-    environment:
-      http_proxy: http://172.16.1.2:8080
-      https_proxy: https://172.16.1.2:8080
+
+        #--------------------------Begin zookeeper installation------------------------
+        # - role: zookeeper
+        #   vars:
+        #     framework_base:  "{{Framework_location}}"
+        #     zookeeper_package: "{{zookeeper_archive}}"
+        #     zookeeper_source: "{{Common_packages}}/{{zookeeper_archive}}"
+        #     zookeeper_destination: "{{Temprory_folder_name}}"
+        #     path_to_zookeeper: "{{Temprory_folder_name}}"
+        #     Uncompressed_zookeeper_folder: "{{Uncompressed_zookeeper}}"
+        #     zookeeper_owner: "{{linux_user}}"
+        #     zookeeper_group: "{{user_group}}"
+        #     config_location: "{{Ansible_root}}/{{zookeeper_conf}}"
+        #     service_dest: "{{OS_systemd_location}}"
+
+        #--------------------------End zookeeper installation--------------------------
+        #--------------------------Begin grafana installation------------------------
+        - role: Grafana
+          vars:
+            grafana_dest: "{{Temprory_folder_name}}"
+            grafana_src: "{{grafana_src_local}}"
+            grafana_deb: "{{grafana_deb_name}}"
+
+        #--------------------------End grafana installation--------------------------
+    # environment:
+    #   http_proxy: http://172.16.1.2:8080
+    #   https_proxy: https://172.16.1.2:8080

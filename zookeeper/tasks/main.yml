@@ -1,0 +1,49 @@
+---
+# tasks file for zookeeper
+
+ - name:               detecting Home directory
+   shell:              echo $HOME
+   register:           home_dir
+
+ - name: "copying {{zookeeper_package}} to remote host"
+   copy:
+       src:  "{{zookeeper_source}}"
+       dest: "{{zookeeper_destination}}"
+       mode: 0644
+
+ - name: "decompressing {{zookeeper_package}}"
+   unarchive:
+       src:           "{{home_dir.stdout}}/{{path_to_zookeeper}}/{{zookeeper_package}}"
+       dest:          "{{framework_base}}"
+       copy:          no
+       owner:         "{{zookeeper_owner}}"
+       group:         "{{zookeeper_group}}"
+   become:           yes
+ #
+ - name:             "Renaming folder {{Uncompressed_zookeeper_folder}} to zookeeper"
+   shell:            "mv {{framework_base}}/{{Uncompressed_zookeeper_folder}} {{framework_base}}/zookeeper"
+   become:           yes
+
+ - name: "create data dir"
+   file:
+         path: "{{framework_base}}/zookeeper/data"
+         state: directory
+         mode: 0711
+         owner:         "{{zookeeper_owner}}"
+         group:         "{{zookeeper_group}}"
+
+ - name: "copy dynamic config to zookeeper"
+   template:
+     src: "{{config_location}}/zoo.j2"
+     dest: "{{framework_base}}/zookeeper/conf/zoo.cfg"
+
+ - name: "starting zookeeper"
+   shell: "{{framework_base}}/zookeeper/bin/zkServer.sh start"
+
+ - name: "checking status zookeeper"
+   shell: "{{framework_base}}/zookeeper/bin/zkServer.sh status"
+   register: zookeeperStatus
+
+ - name: "zookeeper status"
+   debug:
+     msg: "{{zookeeperStatus}}"

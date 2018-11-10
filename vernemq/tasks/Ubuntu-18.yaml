@@ -1,6 +1,6 @@
 ---
-  - name: "Downloading vernemq for {{ansible_distribution}}-{{ ansible_distribution_major_version}}"
+  - name: "Downloading grafana for {{ansible_distribution}}-{{ ansible_distribution_major_version}}"
     get_url:
-      url: https://bintray.com/artifact/download/erlio/vernemq/deb/bionic/vernemq_1.6.1-1_amd64.deb
-      dest: "{{ vernemq_deb }}"
+      url: https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_5.3.2_amd64.deb
+      dest: "{{ grafana_deb }}"
       validate_certs: false
