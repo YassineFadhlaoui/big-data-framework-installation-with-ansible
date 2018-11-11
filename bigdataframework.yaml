@@ -18,6 +18,14 @@
       hadoop_conf: "conf/hadoop"
       Hadoop_archive: "hadoop-3.1.1.tar.gz"
       Uncompressed_hadoop: "hadoop-3.1.1"
+      hadoop_host_ip: "localhost"
+
+      hbase_conf: "conf/hbase"
+      hbase_archive: "hbase-1.4.8-bin.tar.gz"
+      Uncompressed_hbase: "hbase-1.4.8"
+      zookeeper_port_: "2181"
+      zookeeper_quorum: "localhost"
+      zookeeper_data: "{{framework_base}}/zookeeper/data"
 
       Kafka_archive: "kafka_2.11-2.0.0.tgz"
       Uncompressed_kafka: "kafka_2.11-2.0.0"
@@ -27,7 +35,7 @@
       Uncompressed_zookeeper: "zookeeper-3.4.13"
       zookeeper_conf: "conf/zookeeper"
 
-      Hbase_archive: "hbase-1.4.8-bin.tar.gz"
+
 
       OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
 
@@ -92,6 +100,25 @@
         #    java_home: "{{Framework_location}}/java/{{JAVA_version}}"
 
         #--------------------------End Hadoop installation--------------------------
+        #--------------------------Begin Hadoop installation------------------------
+        - role: hbase
+          vars:
+           framework_base:  "{{Framework_location}}"
+           hbase_package: "{{hbase_archive}}"
+           hbase_source: "{{Common_packages}}/{{hbase_archive}}"
+           hbase_destination: "{{Temprory_folder_name}}"
+           path_to_hbase: "{{Temprory_folder_name}}"
+           Uncompressed_hbase_folder: "{{Uncompressed_hbase}}"
+           hbase_owner: "{{linux_user}}"
+           hbase_group: "{{user_group}}"
+           config_location: "{{Ansible_root}}/{{hbase_conf}}"
+           java_home: "{{Framework_location}}/java/{{JAVA_version}}"
+           hadoop_host: "{{hadoop_host_ip}}"
+           zookeeper_port: "{{zookeeper_port_}}"
+           zookeeper_quorum_hosts: "{{zookeeper_quorum}}"
+           zookeeper_data_dir: "{{zookeeper_data}}"
+
+        #--------------------------End Hadoop installation--------------------------
         #--------------------------Begin kafka installation------------------------
         # - role: kafka
         #   vars:
@@ -124,11 +151,11 @@
 
         #--------------------------End zookeeper installation--------------------------
         #--------------------------Begin grafana installation------------------------
-        - role: Grafana
-          vars:
-            grafana_dest: "{{Temprory_folder_name}}"
-            grafana_src: "{{grafana_src_local}}"
-            grafana_deb: "{{grafana_deb_name}}"
+        # - role: Grafana
+        #   vars:
+        #     grafana_dest: "{{Temprory_folder_name}}"
+        #     grafana_src: "{{grafana_src_local}}"
+        #     grafana_deb: "{{grafana_deb_name}}"
 
         #--------------------------End grafana installation--------------------------
     # environment:

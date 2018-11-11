@@ -1,2 +1,62 @@
 ---
 # tasks file for hbase
+ - name:               detecting Home directory
+   shell:              echo $HOME
+   register:           home_dir
+
+
+ - name:             "copying {{hbase_package}} to remote host"
+   copy:
+     src:             "{{hbase_source}}"
+     dest:            "{{hbase_destination}}"
+     mode:            0644
+ #
+ - name:             "decompressing {{hbase_package}}"
+   unarchive:
+       src:           "{{home_dir.stdout}}/{{path_to_hbase}}/{{hbase_package}}"
+       dest:          "{{framework_base}}"
+       copy:          no
+       owner:         "{{hbase_owner}}"
+       group:         "{{hbase_group}}"
+   become:           yes
+ #
+ - name:             "Renaming folder {{Uncompressed_hbase_folder}} to hbase"
+   shell:            "mv {{framework_base}}/{{Uncompressed_hbase_folder}} {{framework_base}}/hbase"
+   become:           yes
+
+ - name:               testing if hbase is already enabled
+   shell:              grep HBASE_HOME "{{home_dir.stdout}}/.bashrc"  | wc -l
+   register:           ishbase_HOMEThere
+   become:             yes
+
+ - name:               hbase installation notification
+   debug:              msg="{{ishbase_HOMEThere.stdout}}"
+
+ - name:               "Adding hbase variables to .bashrc"
+   lineinfile:
+          path:        "{{home_dir.stdout}}/.bashrc"
+          line:        "{{item}}"
+   with_items:
+         - "###########hbase installation###############"
+         - "export HBASE_HOME={{framework_base}}/hbase"
+         - "############## End hbase variables#################"
+   become:             yes
+   when:               ishbase_HOMEThere.stdout == "0"
+
+ - name: "copy habse-env dynamic template "
+   template:
+         src: "{{config_location}}/hbase-env.j2"
+         dest: "{{framework_base}}/hbase/conf/hbase-env.sh"
+         owner: "{{hbase_owner}}"
+         group: "{{hbase_group}}"
+         mode: 0544
+         force: yes
+
+ - name: "hbase dynamic config"
+   template:
+         src: "{{config_location}}/hbase-site.j2"
+         dest: "{{framework_base}}/hbase/conf/hbase-site.xml"
+         owner: "{{hbase_owner}}"
+         group: "{{hbase_group}}"
+         mode: 0444
+         force: yes
