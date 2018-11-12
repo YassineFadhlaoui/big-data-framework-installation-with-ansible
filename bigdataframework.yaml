@@ -54,6 +54,9 @@
 
       OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
 
+      EMS_consumer_archive: "EMSKafkaConsumer.tar.gz"
+
+
       grafana_deb_name: "grafana_5.1.4_amd64.deb"
       grafana_src_local: "{{Common_packages}}/{{grafana_deb_name}}"
 
@@ -209,15 +212,29 @@
 
         #--------------------------End Kafka connector installation--------------------------
         #--------------------------Begin OpenTSDB installation------------------------
-        - role: OpenTSDB
+        # - role: OpenTSDB
+        #   vars:
+        #      opentsdb_package_destination: "{{Temprory_folder_name}}"
+        #      config_location: "conf/opentsdb"
+        #      JAVA_HOME: "{{Framework_location}}/java/{{JAVA_version}}" # patching OpenTSDB
+        #      opentsdb_owner: "{{linux_user}}"
+        #      opentsdb_group: "{{user_group}}"
+        #--------------------------End OpenTSDB installation--------------------------
+        #--------------------------Begin OpenTSDB installation------------------------
+        - role: EMScustomConsumer
           vars:
-             opentsdb_package_destination: "{{Temprory_folder_name}}"
-             config_location: "conf/opentsdb"
-             JAVA_HOME: "{{Framework_location}}/java/{{JAVA_version}}" # patching OpenTSDB
-             opentsdb_owner: "{{linux_user}}"
-             opentsdb_group: "{{user_group}}"
-
-
+             kafka_consumer_source: "{{Common_packages}}/{{EMS_consumer_archive}}"
+             kafka_consumer_destination: "{{Temprory_folder_name}}"
+             kafka_consumer_package:  "{{EMS_consumer_archive}}"
+             framework_base: "/usr/local"
+             EMSKafkaConsumer_owner: "{{linux_user}}"
+             EMSKafkaConsumer_group: "{{user_group}}"
+             config_location: "conf/kafka/EMSKafkaConsumer"
+             OpenTSDB_host: "localhost"
+             OpenTSDB_port: "4242"
+             kafka_server: "localhost"
+             kafka_service_port: "9092"
+        #--------------------------End OpenTSDB installation--------------------------
         #--------------------------Begin grafana installation------------------------
         # - role: Grafana
         #   vars:

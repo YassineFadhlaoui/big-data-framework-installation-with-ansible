@@ -1,0 +1,57 @@
+---
+# tasks file for EMScustomConsumer
+
+ - name:               detecting Home directory
+   shell:              echo $HOME
+   register:           home_dir
+
+ - name: "copying EMS  kafka consumer to remote host"
+   copy:
+       src:  "{{kafka_consumer_source}}"
+       dest: "{{kafka_consumer_destination}}"
+       mode: 0644
+
+ - name: "decompressing {{kafka_consumer_package}}"
+   unarchive:
+       src:           "{{home_dir.stdout}}/{{kafka_consumer_destination}}/{{kafka_consumer_package}}"
+       dest:          "{{framework_base}}"
+       copy:          no
+       owner:         "{{EMSKafkaConsumer_owner}}"
+       group:         "{{EMSKafkaConsumer_group}}"
+   become:           yes
+ #
+ - name: "verifying old installation"
+   stat:
+      path: "{{framework_base}}/EMSKafkaConsumer"
+   register: old_installation
+
+ - name: "create config folder for EMS  kafka consumer"
+   file:
+      path: "/etc/EMSKafkaConsumer"
+      state: directory
+      mode: 0660
+      owner: "{{EMSKafkaConsumer_owner}}"
+      group: "{{EMSKafkaConsumer_group}}"
+   become: yes
+
+ - name: "create log folder for EMS  kafka consumer"
+   file:
+      path: "/var/log/EMSKafkaConsumer"
+      state: directory
+      mode: 0755
+      owner: "{{EMSKafkaConsumer_owner}}"
+      group: "{{EMSKafkaConsumer_group}}"
+   become: yes
+
+ - name: "EMS kafka consumer Kafka dynamic config"
+   template:
+         src: "{{item}}"
+         dest: "/etc/EMSKafkaConsumer/"
+         owner: "{{EMSKafkaConsumer_owner}}"
+         group: "{{EMSKafkaConsumer_group}}"
+         mode: 0555
+         force: yes
+   with_items:
+     - "{{config_location}}/log4j.conf"
+     - "{{config_location}}/KafkaSubscriber.conf"
+     - "{{config_location}}/EMSKafkaConsumer.conf"
