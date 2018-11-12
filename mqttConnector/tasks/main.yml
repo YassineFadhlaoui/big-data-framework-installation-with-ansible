@@ -1,0 +1,37 @@
+---
+# tasks file for mqttConnector
+ - name:               detecting Home directory
+   shell:              echo $HOME
+   register:           home_dir
+
+ - name: "copying mqtt libraries to remote host"
+   copy:
+       src:  "{{item}}"
+       dest: "{{libraries_destination}}"
+       mode: 0444
+       owner: "{{kafka_owner}}"
+       group: "{{kafka_group}}"
+   with_items:
+     - "{{paho_library}}"
+     - "{{kafka_connect_library}}"
+
+ - name: "copying dynamic mqtt config to remote host"
+   template:
+       src:  "{{mqtt_connector_config}}"
+       dest: "{{kafka_configs}}/mqtt.properties"
+       mode: 0444
+       owner: "{{kafka_owner}}"
+       group: "{{kafka_group}}"
+
+
+ - name: "copying dynamic mqtt connector config to remote host"
+   template:
+       src:  "{{connect_standalone_config}}"
+       dest: "{{kafka_configs}}/connect-standalone.properties"
+       mode: 0444
+       owner: "{{kafka_owner}}"
+       group: "{{kafka_group}}"
+
+ - name: "adding cert {{ca_cert_name}} to java keystore"
+   shell: ""
+   become: yes

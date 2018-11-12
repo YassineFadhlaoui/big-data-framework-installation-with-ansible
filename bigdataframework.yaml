@@ -25,11 +25,22 @@
       Uncompressed_hbase: "hbase-1.4.8"
       zookeeper_port_: "2181"
       zookeeper_quorum: "localhost"
-      zookeeper_data: "{{framework_base}}/zookeeper/data"
+      zookeeper_data: "{{Framework_location}}/zookeeper/data"
 
       Kafka_archive: "kafka_2.11-2.0.0.tgz"
       Uncompressed_kafka: "kafka_2.11-2.0.0"
       kafka_conf: "conf/kafka"
+      kafka_host_address: "localhost"
+      kafka_instance_port: "9092"
+
+      kafka_libs: "{{Framework_location}}/kafka/libs"
+      paho_lib: "mqtt/lib/org.eclipse.paho.client.mqttv3-1.0.2.jar"
+      kafka_connect_lib: "mqtt/lib/kafka-connect-mqtt-1.1-SNAPSHOT.jar"
+      mqtt_properties: "mqtt/mqtt.j2"
+      kafka_mqtt_standalone: "mqtt/connect-standalone.j2"
+
+
+
 
       zookeeper_archive: "zookeeper-3.4.13.tar.gz"
       Uncompressed_zookeeper: "zookeeper-3.4.13"
@@ -69,8 +80,8 @@
 
         #--------------------------End Java installation--------------------------
         #--------------------------Begin VERNEMQ installation------------------------
-        #- role: vernemq
-        #  vars:
+        # - role: vernemq
+        #   vars:
         #    vernemq_package_destination: "{{Temprory_folder_name}}"
         #    vcert_source: "{{vernemq_conf_path}}/ssl/ca.crt"
         #    vcert_destination: "/etc/ssl/"
@@ -104,18 +115,18 @@
 
 
         #--------------------------Begin zookeeper installation------------------------
-        # - role: zookeeper
-        #   vars:
-        #     framework_base:  "{{Framework_location}}"
-        #     zookeeper_package: "{{zookeeper_archive}}"
-        #     zookeeper_source: "{{Common_packages}}/{{zookeeper_archive}}"
-        #     zookeeper_destination: "{{Temprory_folder_name}}"
-        #     path_to_zookeeper: "{{Temprory_folder_name}}"
-        #     Uncompressed_zookeeper_folder: "{{Uncompressed_zookeeper}}"
-        #     zookeeper_owner: "{{linux_user}}"
-        #     zookeeper_group: "{{user_group}}"
-        #     config_location: "{{Ansible_root}}/{{zookeeper_conf}}"
-        #     service_dest: "{{OS_systemd_location}}"
+        - role: zookeeper
+          vars:
+            framework_base:  "{{Framework_location}}"
+            zookeeper_package: "{{zookeeper_archive}}"
+            zookeeper_source: "{{Common_packages}}/{{zookeeper_archive}}"
+            zookeeper_destination: "{{Temprory_folder_name}}"
+            path_to_zookeeper: "{{Temprory_folder_name}}"
+            Uncompressed_zookeeper_folder: "{{Uncompressed_zookeeper}}"
+            zookeeper_owner: "{{linux_user}}"
+            zookeeper_group: "{{user_group}}"
+            config_location: "{{Ansible_root}}/{{zookeeper_conf}}"
+            service_dest: "{{OS_systemd_location}}"
 
         #--------------------------End zookeeper installation--------------------------
         #--------------------------Begin Hbase installation------------------------
@@ -150,13 +161,40 @@
             kafka_group: "{{user_group}}"
             config_location: "{{Ansible_root}}/{{kafka_conf}}"
             kafka_broker_id: "0"
-            kafka_host_ip: "localhost"
-            kafka_service_port: "9092"
+            kafka_host_ip: "{{kafka_host_address}}"
+            kafka_service_port: "{{kafka_instance_port}}"
             zookeeper_instance_ip: "localhost"
             zookeeper_instance_port: "2181"
 
 
         #--------------------------End Kafka installation--------------------------
+        #--------------------------Begin kafka mqtt connector installation------------------------
+        - role: mqttConnector
+          vars:
+            framework_base:  "{{Framework_location}}"
+            kafka_owner: "{{linux_user}}"
+            kafka_group: "{{user_group}}"
+            config_location: "{{Ansible_root}}/{{kafka_conf}}"
+            libraries_destination: "{{kafka_libs}}"
+            paho_library: "{{kafka_conf}}/{{paho_lib}}"
+            kafka_connect_library: "{{kafka_conf}}/{{kafka_connect_lib}}"
+            kafka_topic: "EMS_mqtts_test"
+            kafka_client: "kafka_client"
+            mqtt_clean_session: "true"
+            mqtt_broker_ip: "172.29.101.193"
+            mqtt_broker_port: "8883"
+            mqtt_topic: "#" #everything
+            mqtt_qos: "2"
+            mqtt_broker_ca_cert: "/usr/local/java/jdk1.8.0_191/jre/lib/security/cacerts"
+            mqtt_user: "emsServer"
+            mqtt_user_password: "ezwraJX+Mfkh1UeK"
+            kafka_server: "{{kafka_host_address}}" #same as kafka server
+            kafka_port: "{{kafka_instance_port}}" # same as kafka server
+            kafka_configs: "{{framework_base}}/kafka/config"
+            mqtt_connector_config: "{{kafka_conf}}/{{mqtt_properties}}"
+            connect_standalone_config: "{{kafka_conf}}/{{kafka_mqtt_standalone}}"
+
+        #--------------------------End Kafka connector installation--------------------------
         #--------------------------Begin grafana installation------------------------
         # - role: Grafana
         #   vars:

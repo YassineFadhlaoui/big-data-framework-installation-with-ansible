@@ -53,6 +53,9 @@
         group: root
         mode: 0644
         force: yes
-    notify:
-      - restart vernemq
+
+  - name: reStart service vernemq
+    service:
+     name: vernemq
+     state: restarted
     become: yes
