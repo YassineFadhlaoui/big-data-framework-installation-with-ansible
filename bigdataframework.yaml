@@ -187,7 +187,7 @@
             mqtt_qos: "2"
             mqtt_broker_ca_cert: "/usr/local/java/jdk1.8.0_191/jre/lib/security/cacerts"
             mqtt_user: "emsServer"
-            mqtt_user_password: "ezwraJX+Mfkh1UeK"
+            mqtt_user_password: ""
             kafka_server: "{{kafka_host_address}}" #same as kafka server
             kafka_port: "{{kafka_instance_port}}" # same as kafka server
             kafka_configs: "{{framework_base}}/kafka/config"
