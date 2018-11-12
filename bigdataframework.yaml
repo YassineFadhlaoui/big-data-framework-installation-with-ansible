@@ -114,18 +114,18 @@
 
 
         #--------------------------Begin zookeeper installation------------------------
-        - role: zookeeper
-          vars:
-            framework_base:  "{{Framework_location}}"
-            zookeeper_package: "{{zookeeper_archive}}"
-            zookeeper_source: "{{Common_packages}}/{{zookeeper_archive}}"
-            zookeeper_destination: "{{Temprory_folder_name}}"
-            path_to_zookeeper: "{{Temprory_folder_name}}"
-            Uncompressed_zookeeper_folder: "{{Uncompressed_zookeeper}}"
-            zookeeper_owner: "{{linux_user}}"
-            zookeeper_group: "{{user_group}}"
-            config_location: "{{Ansible_root}}/{{zookeeper_conf}}"
-            service_dest: "{{OS_systemd_location}}"
+        # - role: zookeeper
+        #   vars:
+        #     framework_base:  "{{Framework_location}}"
+        #     zookeeper_package: "{{zookeeper_archive}}"
+        #     zookeeper_source: "{{Common_packages}}/{{zookeeper_archive}}"
+        #     zookeeper_destination: "{{Temprory_folder_name}}"
+        #     path_to_zookeeper: "{{Temprory_folder_name}}"
+        #     Uncompressed_zookeeper_folder: "{{Uncompressed_zookeeper}}"
+        #     zookeeper_owner: "{{linux_user}}"
+        #     zookeeper_group: "{{user_group}}"
+        #     config_location: "{{Ansible_root}}/{{zookeeper_conf}}"
+        #     service_dest: "{{OS_systemd_location}}"
 
         #--------------------------End zookeeper installation--------------------------
         #--------------------------Begin Hbase installation------------------------
@@ -148,22 +148,22 @@
 
         #--------------------------End HBase installation--------------------------
         #--------------------------Begin kafka installation------------------------
-        - role: kafka
-          vars:
-            framework_base:  "{{Framework_location}}"
-            kafka_package: "{{Kafka_archive}}"
-            kafka_source: "{{Common_packages}}/{{Kafka_archive}}"
-            kafka_destination: "{{Temprory_folder_name}}"
-            path_to_kafka: "{{Temprory_folder_name}}"
-            Uncompressed_kafka_folder: "{{Uncompressed_kafka}}"
-            kafka_owner: "{{linux_user}}"
-            kafka_group: "{{user_group}}"
-            config_location: "{{Ansible_root}}/{{kafka_conf}}"
-            kafka_broker_id: "0"
-            kafka_host_ip: "{{kafka_host_address}}"
-            kafka_service_port: "{{kafka_instance_port}}"
-            zookeeper_instance_ip: "localhost"
-            zookeeper_instance_port: "2181"
+        # - role: kafka
+        #   vars:
+        #     framework_base:  "{{Framework_location}}"
+        #     kafka_package: "{{Kafka_archive}}"
+        #     kafka_source: "{{Common_packages}}/{{Kafka_archive}}"
+        #     kafka_destination: "{{Temprory_folder_name}}"
+        #     path_to_kafka: "{{Temprory_folder_name}}"
+        #     Uncompressed_kafka_folder: "{{Uncompressed_kafka}}"
+        #     kafka_owner: "{{linux_user}}"
+        #     kafka_group: "{{user_group}}"
+        #     config_location: "{{Ansible_root}}/{{kafka_conf}}"
+        #     kafka_broker_id: "0"
+        #     kafka_host_ip: "{{kafka_host_address}}"
+        #     kafka_service_port: "{{kafka_instance_port}}"
+        #     zookeeper_instance_ip: "localhost"
+        #     zookeeper_instance_port: "2181"
 
 
         #--------------------------End Kafka installation--------------------------
@@ -177,7 +177,7 @@
 
         #--------------------------Begin kafka mqtt connector installation------------------------
         # - role: mqttConnector
-        #   vars:
+        #   var
         #     framework_base:  "{{Framework_location}}"
         #     kafka_owner: "{{linux_user}}"
         #     kafka_group: "{{user_group}}"
@@ -208,6 +208,16 @@
         #     keystore_pass: "{{keystore_password}}"
 
         #--------------------------End Kafka connector installation--------------------------
+        #--------------------------Begin OpenTSDB installation------------------------
+        - role: OpenTSDB
+          vars:
+             opentsdb_package_destination: "{{Temprory_folder_name}}"
+             config_location: "conf/opentsdb"
+             JAVA_HOME: "{{Framework_location}}/java/{{JAVA_version}}" # patching OpenTSDB
+             opentsdb_owner: "{{linux_user}}"
+             opentsdb_group: "{{user_group}}"
+
+
         #--------------------------Begin grafana installation------------------------
         # - role: Grafana
         #   vars:
@@ -216,6 +226,6 @@
         #     grafana_deb: "{{grafana_deb_name}}"
 
         #--------------------------End grafana installation--------------------------
-    # environment:
-    #   http_proxy: http://172.16.1.2:8080
-    #   https_proxy: https://172.16.1.2:8080
+    environment:
+      http_proxy: http://172.16.1.2:8080
+      https_proxy: https://172.16.1.2:8080

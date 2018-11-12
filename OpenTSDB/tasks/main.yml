@@ -1,2 +1,54 @@
 ---
 # tasks file for OpenTSDB
+   - name: detecting Home directory
+     shell: echo $HOME
+     register: home_dir
+
+   - name: detecting system distribution
+     debug: msg=" OS family detected {{ansible_distribution}}-{{ ansible_distribution_major_version}}"
+
+   - include: RedHat.yaml
+     vars:
+       opentsdb_rpm: "{{home_dir.stdout}}/{{opentsdb_package_destination}}"
+     when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"
+
+   - include: Ubuntu.yaml
+     vars:
+       opentsdb_deb: "{{home_dir.stdout}}/{{opentsdb_package_destination}}"
+     when: ansible_distribution == "Ubuntu"
+
+   - name: "patching OpenTSDB init script"
+     template:
+         src: "{{config_location}}/opentsdb.j2"
+         dest: "/etc/init.d/opentsdb"
+         owner: "{{opentsdb_owner}}"
+         group: "{{opentsdb_group}}"
+         mode: 0755
+         force: yes
+     become: yes
+
+   - name: "Reloading system daemons"
+     systemd:
+       daemon_reload: yes
+     become: yes
+     
+   - name: Enable service opentsdb
+     service:
+       name: opentsdb
+       enabled: yes
+     become: yes
+
+   - name: Start service opentsdb
+     service:
+       name: opentsdb
+       state: started
+     become: yes
+
+   - name: getting opentsdb daemon status
+     shell: systemctl status opentsdb
+     become: yes
+     register: opentsdb_status
+
+   - name: testing service opentsdb status
+     debug:
+       var: opentsdb_status

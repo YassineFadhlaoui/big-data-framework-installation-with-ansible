@@ -1,0 +1,12 @@
+---
+  - name: "Downloading opentsdb for {{ansible_distribution}}-{{ ansible_distribution_major_version}}"
+    get_url:
+      url: https://github.com/OpenTSDB/opentsdb/releases/download/v2.3.1/opentsdb-2.3.1.noarch.rpm
+      dest: "{{opentsdb_rpm}}"
+      validate_certs: false
+
+  - name: "Installing opentsdb package for Redhat "
+    yum:
+     name:  "{{opentsdb_rpm}}/opentsdb-2.3.1.noarch.rpm"
+     validate_certs: false
+    become: yes

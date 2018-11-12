@@ -1,0 +1,13 @@
+---
+  - name: "Downloading opentsdb for {{ansible_distribution}}-{{ ansible_distribution_major_version}}"
+    get_url:
+      url: https://github.com/OpenTSDB/opentsdb/releases/download/v2.3.1/opentsdb-2.3.1_all.deb
+      dest: "{{ opentsdb_deb}}"
+      validate_certs: false
+
+
+  - name: "Installing opentsdb package for Ubuntu"
+    apt:
+     deb:  "{{opentsdb_deb}}/opentsdb-2.3.1_all.deb"
+     state: present
+    become: yes
