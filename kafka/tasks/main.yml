@@ -19,6 +19,21 @@
        group:         "{{kafka_group}}"
    become:           yes
  #
+ - name: "verifying old installation"
+   stat:
+      path: "{{framework_base}}/kafka"
+   register: old_installation
+
  - name:             "Renaming folder {{Uncompressed_kafka_folder}} to kafka"
    shell:            "mv {{framework_base}}/{{Uncompressed_kafka_folder}} {{framework_base}}/kafka"
    become:           yes
+   when: old_installation.stat.exists == "false" and old_installation.stat.isdir
+
+ - name: "Kafka dynamic config"
+   template:
+         src: "{{config_location}}/kafkaserver.j2"
+         dest: "{{framework_base}}/kafka/config/server.properties"
+         owner: "{{kafka_owner}}"
+         group: "{{kafka_group}}"
+         mode: 0444
+         force: yes

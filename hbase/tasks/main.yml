@@ -60,3 +60,12 @@
          group: "{{hbase_group}}"
          mode: 0444
          force: yes
+
+ - name: "hbase dynamic config"
+   template:
+         src: "{{config_location}}/hbase-site.j2"
+         dest: "{{framework_base}}/hbase/conf/hbase-site.xml"
+         owner: "{{hbase_owner}}"
+         group: "{{hbase_group}}"
+         mode: 0444
+         force: yes
