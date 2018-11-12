@@ -32,6 +32,19 @@
        owner: "{{kafka_owner}}"
        group: "{{kafka_group}}"
 
- - name: "adding cert {{ca_cert_name}} to java keystore"
-   shell: ""
+ - name: "copying CA cert to kafka connect"
+   copy:
+       src:  "{{ca_cert_location}}"
+       dest: "{{ca_cert_kafka}}"
+       mode: 0400
+       owner: "{{kafka_owner}}"
+       group: "{{kafka_group}}"
+
+ - name: "adding cert ca_cert to java keystore"
+   shell: "{{keytool}} -import -noprompt -file {{ca_cert_kafka}} -alias {{ca_crt_alias}} -keystore {{path_to_key_store}} -storepass {{keystore_pass}}"
    become: yes
+   register: keytoolOutput
+
+ - name: "result"
+   debug:
+    var: keytoolOutput

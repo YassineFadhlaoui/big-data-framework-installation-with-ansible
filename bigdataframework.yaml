@@ -9,6 +9,12 @@
       Temprory_folder_name: "BigDataFrameworkPackages"
       OS_systemd_location: "/lib/systemd/system/"
 
+      JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
+      JAVA_version: jdk1.8.0_191
+      keytool_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/bin/keytool"
+      keystore_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/lib/security/cacerts"
+      keystore_password: "changeit"
+
       linux_user: "yassine"
       user_group: "yassine"
 
@@ -38,9 +44,7 @@
       kafka_connect_lib: "mqtt/lib/kafka-connect-mqtt-1.1-SNAPSHOT.jar"
       mqtt_properties: "mqtt/mqtt.j2"
       kafka_mqtt_standalone: "mqtt/connect-standalone.j2"
-
-
-
+      ca_cert: "{{kafka_conf}}/mqtt/ca.crt"
 
       zookeeper_archive: "zookeeper-3.4.13.tar.gz"
       Uncompressed_zookeeper: "zookeeper-3.4.13"
@@ -52,11 +56,6 @@
 
       grafana_deb_name: "grafana_5.1.4_amd64.deb"
       grafana_src_local: "{{Common_packages}}/{{grafana_deb_name}}"
-
-
-      JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
-      JAVA_version: jdk1.8.0_191
-
 
 
 
@@ -187,12 +186,18 @@
             mqtt_qos: "2"
             mqtt_broker_ca_cert: "/usr/local/java/jdk1.8.0_191/jre/lib/security/cacerts"
             mqtt_user: "emsServer"
-            mqtt_user_password: ""
+            mqtt_user_password: "ezwraJX+Mfkh1UeK"
             kafka_server: "{{kafka_host_address}}" #same as kafka server
             kafka_port: "{{kafka_instance_port}}" # same as kafka server
             kafka_configs: "{{framework_base}}/kafka/config"
             mqtt_connector_config: "{{kafka_conf}}/{{mqtt_properties}}"
             connect_standalone_config: "{{kafka_conf}}/{{kafka_mqtt_standalone}}"
+            ca_cert_location: "{{ca_cert}}"
+            keytool: "{{keytool_path}}"
+            ca_cert_kafka: "{{framework_base}}/kafka/ca.crt"
+            ca_crt_alias: "EMS_ca_cert"
+            path_to_key_store: "{{keystore_path}}"
+            keystore_pass: "{{keystore_password}}"
 
         #--------------------------End Kafka connector installation--------------------------
         #--------------------------Begin grafana installation------------------------
