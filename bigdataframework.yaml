@@ -167,37 +167,45 @@
 
 
         #--------------------------End Kafka installation--------------------------
+
+
+
+        # don't forget the mqtt user password
+
+
+
+
         #--------------------------Begin kafka mqtt connector installation------------------------
-        - role: mqttConnector
-          vars:
-            framework_base:  "{{Framework_location}}"
-            kafka_owner: "{{linux_user}}"
-            kafka_group: "{{user_group}}"
-            config_location: "{{Ansible_root}}/{{kafka_conf}}"
-            libraries_destination: "{{kafka_libs}}"
-            paho_library: "{{kafka_conf}}/{{paho_lib}}"
-            kafka_connect_library: "{{kafka_conf}}/{{kafka_connect_lib}}"
-            kafka_topic: "EMS_mqtts_test"
-            kafka_client: "kafka_client"
-            mqtt_clean_session: "true"
-            mqtt_broker_ip: "172.29.101.193"
-            mqtt_broker_port: "8883"
-            mqtt_topic: "#" #everything
-            mqtt_qos: "2"
-            mqtt_broker_ca_cert: "/usr/local/java/jdk1.8.0_191/jre/lib/security/cacerts"
-            mqtt_user: "emsServer"
-            mqtt_user_password: "ezwraJX+Mfkh1UeK"
-            kafka_server: "{{kafka_host_address}}" #same as kafka server
-            kafka_port: "{{kafka_instance_port}}" # same as kafka server
-            kafka_configs: "{{framework_base}}/kafka/config"
-            mqtt_connector_config: "{{kafka_conf}}/{{mqtt_properties}}"
-            connect_standalone_config: "{{kafka_conf}}/{{kafka_mqtt_standalone}}"
-            ca_cert_location: "{{ca_cert}}"
-            keytool: "{{keytool_path}}"
-            ca_cert_kafka: "{{framework_base}}/kafka/ca.crt"
-            ca_crt_alias: "EMS_ca_cert"
-            path_to_key_store: "{{keystore_path}}"
-            keystore_pass: "{{keystore_password}}"
+        # - role: mqttConnector
+        #   vars:
+        #     framework_base:  "{{Framework_location}}"
+        #     kafka_owner: "{{linux_user}}"
+        #     kafka_group: "{{user_group}}"
+        #     config_location: "{{Ansible_root}}/{{kafka_conf}}"
+        #     libraries_destination: "{{kafka_libs}}"
+        #     paho_library: "{{kafka_conf}}/{{paho_lib}}"
+        #     kafka_connect_library: "{{kafka_conf}}/{{kafka_connect_lib}}"
+        #     kafka_topic: "EMS_mqtts_test"
+        #     kafka_client: "kafka_client"
+        #     mqtt_clean_session: "true"
+        #     mqtt_broker_ip: "172.29.101.193"
+        #     mqtt_broker_port: "8883"
+        #     mqtt_topic: "#" #everything
+        #     mqtt_qos: "2"
+        #     mqtt_broker_ca_cert: "/usr/local/java/jdk1.8.0_191/jre/lib/security/cacerts"
+        #     mqtt_user: "emsServer"
+        #     mqtt_user_password: ""
+        #     kafka_server: "{{kafka_host_address}}" #same as kafka server
+        #     kafka_port: "{{kafka_instance_port}}" # same as kafka server
+        #     kafka_configs: "{{framework_base}}/kafka/config"
+        #     mqtt_connector_config: "{{kafka_conf}}/{{mqtt_properties}}"
+        #     connect_standalone_config: "{{kafka_conf}}/{{kafka_mqtt_standalone}}"
+        #     ca_cert_location: "{{ca_cert}}"
+        #     keytool: "{{keytool_path}}"
+        #     ca_cert_kafka: "{{framework_base}}/kafka/ca.crt"
+        #     ca_crt_alias: "EMS_ca_cert"
+        #     path_to_key_store: "{{keystore_path}}"
+        #     keystore_pass: "{{keystore_password}}"
 
         #--------------------------End Kafka connector installation--------------------------
         #--------------------------Begin grafana installation------------------------
