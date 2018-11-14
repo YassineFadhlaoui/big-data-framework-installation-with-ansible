@@ -4,6 +4,13 @@
       url: https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.3.2-1.x86_64.rpm
       dest: "{{ grafana_rpm }}"
       validate_certs: false
+      
+  - name: "Installing fontconfig"
+    yum:
+     name: fontconfig
+     state: present
+     update_cache: yes
+    become: yes
 
   - name: "Installing grafana package for Redhat "
     yum:

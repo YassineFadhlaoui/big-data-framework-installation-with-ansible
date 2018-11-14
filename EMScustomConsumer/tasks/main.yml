@@ -19,7 +19,7 @@
        owner:         "{{EMSKafkaConsumer_owner}}"
        group:         "{{EMSKafkaConsumer_group}}"
    become:           yes
- #
+
  - name: "verifying old installation"
    stat:
       path: "{{framework_base}}/EMSKafkaConsumer"
@@ -29,7 +29,7 @@
    file:
       path: "/etc/EMSKafkaConsumer"
       state: directory
-      mode: 0660
+      mode: 0755
       owner: "{{EMSKafkaConsumer_owner}}"
       group: "{{EMSKafkaConsumer_group}}"
    become: yes
@@ -49,9 +49,10 @@
          dest: "/etc/EMSKafkaConsumer/"
          owner: "{{EMSKafkaConsumer_owner}}"
          group: "{{EMSKafkaConsumer_group}}"
-         mode: 0555
+         mode: 0755
          force: yes
    with_items:
      - "{{config_location}}/log4j.conf"
      - "{{config_location}}/KafkaSubscriber.conf"
      - "{{config_location}}/EMSKafkaConsumer.conf"
+   become: yes

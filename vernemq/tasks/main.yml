@@ -52,6 +52,7 @@
  - name: getting vernemq daemon status
    shell: systemctl status vernemq
    register: vernemq_status
+   become: yes
 
  - name: testing service VerneMQ status
    debug: msg="VerneMQ is running"

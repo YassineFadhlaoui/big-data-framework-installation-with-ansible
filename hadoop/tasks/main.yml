@@ -5,24 +5,36 @@
    register:           home_dir
 
 
- # - name:             "copying {{hadoop_package}} to remote host"
- #   copy:
- #    src:             "{{hadoop_source}}"
- #    dest:            "{{hadoop_destination}}"
- #    mode:            0644
- #
- # - name:             "decompressing {{hadoop_package}}"
- #   unarchive:
- #      src:           "{{home_dir.stdout}}/{{path_to_Hadoop}}/{{hadoop_package}}"
- #      dest:          "{{framework_base}}"
- #      copy:          no
- #      owner:         "{{hadoop_owner}}"
- #      group:         "{{hadoop_group}}"
- #   become:           yes
- #
- # - name:             "Renaming folder {{Uncompressed_hadoop_folder}} to hadoop"
- #   shell:            "mv {{framework_base}}/{{Uncompressed_hadoop_folder}} {{framework_base}}/hadoop"
- #   become:           yes
+ - name:             "copying {{hadoop_package}} to remote host"
+   copy:
+    src:             "{{hadoop_source}}"
+    dest:            "{{hadoop_destination}}"
+    mode:            0644
+
+ - name:             "decompressing {{hadoop_package}}"
+   unarchive:
+      src:           "{{home_dir.stdout}}/{{path_to_Hadoop}}/{{hadoop_package}}"
+      dest:          "{{framework_base}}"
+      copy:          no
+      owner:         "{{hadoop_owner}}"
+      group:         "{{hadoop_group}}"
+   become:           yes
+
+ - name: "verifying old installation"
+   stat:
+        path: "{{framework_base}}/hadoop"
+   register: old_installation
+
+ - name: "purge old hadoop installation"
+   file:
+        path: "{{framework_base}}/hadoop"
+        state: absent
+   when: old_installation.stat.exists == true
+   become: yes
+
+ - name:             "Renaming folder {{Uncompressed_hadoop_folder}} to hadoop"
+   shell:            "mv {{framework_base}}/{{Uncompressed_hadoop_folder}} {{framework_base}}/hadoop"
+   become:           yes
 
  - name:               testing if hadoop is already enabled
    shell:              grep HADOOP_HOME "{{home_dir.stdout}}/.bashrc"  | wc -l
@@ -47,6 +59,8 @@
          - "############## End Hadoop variables#################"
    become:             yes
    when:               isHADOOP_HOMEThere.stdout == "0"
+
+
 
  - name: purge old installation
    stat:
@@ -102,9 +116,9 @@
     mode: 0644
     force: yes
    with_items:
-    - "{{config_location}}/core-site.xml"
     - "{{config_location}}/mapred-site.xml"
     - "{{config_location}}/yarn-site.xml"
+
    become: yes
 
  - name: "dynamic hdfs site configuration"
@@ -114,6 +128,24 @@
     owner: "{{hadoop_owner}}"
     group: "{{hadoop_group}}"
     mode: 0644
+
+
+ - name: "dynamic hadoop env configuration"
+   template:
+    src: "{{config_location}}/hadoop-env.sh"
+    dest:  "{{framework_base}}/hadoop/etc/hadoop/hadoop-env.sh"
+    owner: "{{hadoop_owner}}"
+    group: "{{hadoop_group}}"
+    mode: 0755
+
+ - name: "dynamic hadoop core configuration"
+   template:
+    src: "{{config_location}}/core-site.xml.j2"
+    dest:  "{{framework_base}}/hadoop/etc/hadoop/core-site.xml"
+    owner: "{{hadoop_owner}}"
+    group: "{{hadoop_group}}"
+    mode: 0755
+
 
  - name: "Check if id_rsa is present at {{home_dir.stdout}}/.ssh/."
    stat:
@@ -144,6 +176,10 @@
     group: "{{hadoop_group}}"
     mode: 0755
    when: isJAVAHomeset.stdout == "0"
+
+ - name: "stopping  node"
+   shell: "{{framework_base}}/hadoop/sbin/stop-all.sh"
+
 
  - name: "formatting node"
    shell: "yes 'Y' | {{framework_base}}/hadoop/bin/hdfs namenode -format"

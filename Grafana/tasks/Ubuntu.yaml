@@ -5,6 +5,13 @@
       dest: "{{home_dir.stdout}}/{{grafana_package_destination}}"
       mode: 0611
 
+  - name: "Installing libfontconfig"
+    apt:
+     name: fontconfig
+     state: present
+     update_cache: yes
+    become: yes
+
 
   - name: "Installing Grafana package for Ubuntu"
     apt:

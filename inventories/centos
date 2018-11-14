@@ -1,0 +1,8 @@
+[bigdataframework:children]
+centos
+
+[centos]
+172.29.101.178
+
+[centos:vars]
+ansible_user=yassine

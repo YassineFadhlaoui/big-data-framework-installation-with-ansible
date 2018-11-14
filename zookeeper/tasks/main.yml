@@ -30,7 +30,7 @@
  - name:             "Renaming folder {{Uncompressed_zookeeper_folder}} to zookeeper"
    shell:            "mv {{framework_base}}/{{Uncompressed_zookeeper_folder}} {{framework_base}}/zookeeper"
    become:           yes
-   when: old_installation.stat.exists == "false" and old_installation.stat.isdir
+   when: old_installation.stat.exists == false
 
  - name: "create data dir"
    file:
@@ -47,11 +47,3 @@
 
  - name: "starting zookeeper"
    shell: "{{framework_base}}/zookeeper/bin/zkServer.sh start"
-
- - name: "checking status zookeeper"
-   shell: "{{framework_base}}/zookeeper/bin/zkServer.sh status"
-   register: zookeeperStatus
-
- - name: "zookeeper status"
-   debug:
-     msg: "{{zookeeperStatus}}"

@@ -9,6 +9,16 @@
       Temprory_folder_name: "BigDataFrameworkPackages"
       OS_systemd_location: "/lib/systemd/system/"
 
+#-----------------------Host names for modular architecture------------------
+      vernemq_host: "172.29.101.178"
+
+      zookeeper_host: "localhost"
+      kafka_host: "172.29.101.193"
+      opentsdb_host: "172.29.101.191"
+      hadoop_host: "172.29.101.191"
+      hbase_host: "172.29.101.191"
+#-----------------------------------------------------------------------------
+
       JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
       JAVA_version: jdk1.8.0_191
       keytool_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/bin/keytool"
@@ -21,22 +31,22 @@
       vernemq_config: "conf/vernemq"
       vernemq_conf_path: "{{Ansible_root}}/{{vernemq_config}}"
 
+
       hadoop_conf: "conf/hadoop"
       Hadoop_archive: "hadoop-3.1.1.tar.gz"
       Uncompressed_hadoop: "hadoop-3.1.1"
-      hadoop_host_ip: "localhost"
 
       hbase_conf: "conf/hbase"
       hbase_archive: "hbase-1.4.8-bin.tar.gz"
       Uncompressed_hbase: "hbase-1.4.8"
       zookeeper_port_: "2181"
-      zookeeper_quorum: "localhost"
+      zookeeper_quorum: "{{zookeeper_host}}"
       zookeeper_data: "{{Framework_location}}/zookeeper/data"
 
       Kafka_archive: "kafka_2.11-2.0.0.tgz"
       Uncompressed_kafka: "kafka_2.11-2.0.0"
       kafka_conf: "conf/kafka"
-      kafka_host_address: "localhost"
+      kafka_host_address: "{{kafka_host}}"
       kafka_instance_port: "9092"
 
       kafka_libs: "{{Framework_location}}/kafka/libs"
@@ -74,18 +84,18 @@
         #--------------------------Begin JAVA installation------------------------
         # - role: java
         #   vars:
-        #     java_package: "{{Common_packages}}/{{JAVA_archive}}"
-        #     path: "{{Temprory_folder_name}}"
-        #     destination: "{{Framework_location}}"
+        #     java_package: "{{Common_packages}}/{{JAVA_archive}}" #Where java package is located on local machine (under /packages)
+        #     path: "{{Temprory_folder_name}}" # temprory path to which java package will be copied to on remote host
+        #     destination: "{{Framework_location}}" # where java will be installed on remote host
         #     java_package_name: "{{JAVA_archive}}"
-        #     java_version: "{{JAVA_version}}"
+        #     java_version: "{{JAVA_version}}" # jdk name jdk1.8.0_191
 
         #--------------------------End Java installation--------------------------
         #--------------------------Begin VERNEMQ installation------------------------
         # - role: vernemq
         #   vars:
-        #    vernemq_package_destination: "{{Temprory_folder_name}}"
-        #    vcert_source: "{{vernemq_conf_path}}/ssl/ca.crt"
+        #    vernemq_package_destination: "{{Temprory_folder_name}}" #where vernemq will be copied on remote host
+        #    vcert_source: "{{vernemq_conf_path}}/ssl/ca.crt" # path to ca.crt
         #    vcert_destination: "/etc/ssl/"
         #    vkey_source: "{{vernemq_conf_path}}/ssl/server.key"
         #    vkey_destination: "/etc/ssl/"
@@ -99,18 +109,20 @@
         #    vpasswd_destination: "/etc/vernemq/vmq.passwd"
         #--------------------------End Verne MQ installation------------------------
         #--------------------------Begin Hadoop installation------------------------
-        #- role: hadoop
-        #  vars:
+        # - role: hadoop
+        #   vars:
         #    framework_base:  "{{Framework_location}}"
         #    hadoop_package: "{{Hadoop_archive}}"
         #    hadoop_source: "{{Common_packages}}/{{Hadoop_archive}}"
         #    hadoop_destination: "{{Temprory_folder_name}}"
         #    path_to_Hadoop: "{{Temprory_folder_name}}"
         #    Uncompressed_hadoop_folder: "{{Uncompressed_hadoop}}"
+        #    hadoop_host_address: "{{hadoop_host}}"
         #    hadoop_owner: "{{linux_user}}"
         #    hadoop_group: "{{user_group}}"
         #    config_location: "{{Ansible_root}}/{{hadoop_conf}}"
         #    java_home: "{{Framework_location}}/java/{{JAVA_version}}"
+        #    hadoop_home: "{{Framework_location}}/hadoop"
 
         #--------------------------End Hadoop installation--------------------------
 
@@ -144,7 +156,7 @@
         #    hbase_group: "{{user_group}}"
         #    config_location: "{{Ansible_root}}/{{hbase_conf}}"
         #    java_home: "{{Framework_location}}/java/{{JAVA_version}}"
-        #    hadoop_host: "{{hadoop_host_ip}}"
+        #    hadoop_host_ip: "{{hadoop_host}}"
         #    zookeeper_port: "{{zookeeper_port_}}"
         #    zookeeper_quorum_hosts: "{{zookeeper_quorum}}"
         #    zookeeper_data_dir: "{{zookeeper_data}}"
@@ -163,9 +175,9 @@
         #     kafka_group: "{{user_group}}"
         #     config_location: "{{Ansible_root}}/{{kafka_conf}}"
         #     kafka_broker_id: "0"
-        #     kafka_host_ip: "{{kafka_host_address}}"
+        #     kafka_host_ip: "{{kafka_host}}" #address to be used by kafka server
         #     kafka_service_port: "{{kafka_instance_port}}"
-        #     zookeeper_instance_ip: "localhost"
+        #     zookeeper_instance_ip: "{{zookeeper_host}}" #zookeeper installation
         #     zookeeper_instance_port: "2181"
 
 
@@ -176,11 +188,9 @@
         # don't forget the mqtt user password
 
 
-
-
         #--------------------------Begin kafka mqtt connector installation------------------------
         # - role: mqttConnector
-        #   var
+        #   vars:
         #     framework_base:  "{{Framework_location}}"
         #     kafka_owner: "{{linux_user}}"
         #     kafka_group: "{{user_group}}"
@@ -191,13 +201,13 @@
         #     kafka_topic: "EMS_mqtts_test"
         #     kafka_client: "kafka_client"
         #     mqtt_clean_session: "true"
-        #     mqtt_broker_ip: "172.29.101.193"
+        #     mqtt_broker_ip: "{{vernemq_host}}"
         #     mqtt_broker_port: "8883"
         #     mqtt_topic: "#" #everything
         #     mqtt_qos: "2"
         #     mqtt_broker_ca_cert: "/usr/local/java/jdk1.8.0_191/jre/lib/security/cacerts"
         #     mqtt_user: "emsServer"
-        #     mqtt_user_password: ""
+        #     mqtt_user_password: "ezwraJX+Mfkh1UeK"
         #     kafka_server: "{{kafka_host_address}}" #same as kafka server
         #     kafka_port: "{{kafka_instance_port}}" # same as kafka server
         #     kafka_configs: "{{framework_base}}/kafka/config"
@@ -212,28 +222,29 @@
 
         #--------------------------End Kafka connector installation--------------------------
         #--------------------------Begin OpenTSDB installation------------------------
-        # - role: OpenTSDB
-        #   vars:
-        #      opentsdb_package_destination: "{{Temprory_folder_name}}"
-        #      config_location: "conf/opentsdb"
-        #      JAVA_HOME: "{{Framework_location}}/java/{{JAVA_version}}" # patching OpenTSDB
-        #      opentsdb_owner: "{{linux_user}}"
-        #      opentsdb_group: "{{user_group}}"
+        - role: OpenTSDB
+          vars:
+             opentsdb_package_destination: "{{Temprory_folder_name}}"
+             config_location: "conf/opentsdb"
+             JAVA_HOME: "{{Framework_location}}/java/{{JAVA_version}}" # patching OpenTSDB
+             opentsdb_owner: "{{linux_user}}"
+             opentsdb_group: "{{user_group}}"
+             zookeeper_address: "{{zookeeper_host}}"
         #--------------------------End OpenTSDB installation--------------------------
         #--------------------------Begin OpenTSDB installation------------------------
-        - role: EMScustomConsumer
-          vars:
-             kafka_consumer_source: "{{Common_packages}}/{{EMS_consumer_archive}}"
-             kafka_consumer_destination: "{{Temprory_folder_name}}"
-             kafka_consumer_package:  "{{EMS_consumer_archive}}"
-             framework_base: "/usr/local"
-             EMSKafkaConsumer_owner: "{{linux_user}}"
-             EMSKafkaConsumer_group: "{{user_group}}"
-             config_location: "conf/kafka/EMSKafkaConsumer"
-             OpenTSDB_host: "localhost"
-             OpenTSDB_port: "4242"
-             kafka_server: "localhost"
-             kafka_service_port: "9092"
+        # - role: EMScustomConsumer
+        #   vars:
+        #      kafka_consumer_source: "{{Common_packages}}/{{EMS_consumer_archive}}"
+        #      kafka_consumer_destination: "{{Temprory_folder_name}}"
+        #      kafka_consumer_package:  "{{EMS_consumer_archive}}"
+        #      framework_base: "/usr/local"
+        #      EMSKafkaConsumer_owner: "{{linux_user}}"
+        #      EMSKafkaConsumer_group: "{{user_group}}"
+        #      config_location: "conf/kafka/EMSKafkaConsumer"
+        #      OpenTSDB_host: "{{opentsdb_host}}"
+        #      OpenTSDB_port: "4242"
+        #      kafka_server: "{{kafka_host}}"
+        #      kafka_service_port: "9092"
         #--------------------------End OpenTSDB installation--------------------------
         #--------------------------Begin grafana installation------------------------
         # - role: Grafana
@@ -246,3 +257,4 @@
     environment:
       http_proxy: http://172.16.1.2:8080
       https_proxy: https://172.16.1.2:8080
+      JAVA_HOME: "{{Framework_location}}/java/{{JAVA_version}}"

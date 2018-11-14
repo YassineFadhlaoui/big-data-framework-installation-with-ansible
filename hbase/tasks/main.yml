@@ -4,7 +4,6 @@
    shell:              echo $HOME
    register:           home_dir
 
-
  - name:             "copying {{hbase_package}} to remote host"
    copy:
      src:             "{{hbase_source}}"
@@ -20,9 +19,31 @@
        group:         "{{hbase_group}}"
    become:           yes
  #
+
+
+ - name: "verifying old installation"
+   stat:
+        path: "{{framework_base}}/hbase"
+   register: old_installation
+
+ - name: "purge old hadoop installation"
+   file:
+        path: "{{framework_base}}/hbase"
+        state: absent
+   when: old_installation.stat.exists == true
+   become: yes
+
  - name:             "Renaming folder {{Uncompressed_hbase_folder}} to hbase"
    shell:            "mv {{framework_base}}/{{Uncompressed_hbase_folder}} {{framework_base}}/hbase"
    become:           yes
+
+ - name:
+   file:
+     path: "{{framework_base}}/hbase"
+     owner: "{{hbase_owner}}"
+     group: "{{hbase_group}}"
+     mode: 0755
+   become: yes
 
  - name:               testing if hbase is already enabled
    shell:              grep HBASE_HOME "{{home_dir.stdout}}/.bashrc"  | wc -l
@@ -61,11 +82,10 @@
          mode: 0444
          force: yes
 
- - name: "hbase dynamic config"
-   template:
-         src: "{{config_location}}/hbase-site.j2"
-         dest: "{{framework_base}}/hbase/conf/hbase-site.xml"
-         owner: "{{hbase_owner}}"
-         group: "{{hbase_group}}"
-         mode: 0444
-         force: yes
+ - name: "starting hbase"
+   shell: "/usr/local/hbase/bin/start-hbase.sh"
+   register: output
+
+ - name: "starting hbase [2/2]"
+   debug:
+     var: output

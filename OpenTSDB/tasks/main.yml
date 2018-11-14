@@ -27,11 +27,21 @@
          force: yes
      become: yes
 
+   - name: "configuring OpenTSDB"
+     template:
+         src: "{{config_location}}/opentsdb.conf.j2"
+         dest: "/etc/opentsdb/opentsdb.conf"
+         owner: "{{opentsdb_owner}}"
+         group: "{{opentsdb_group}}"
+         mode: 0444
+         force: yes
+     become: yes
+
    - name: "Reloading system daemons"
      systemd:
        daemon_reload: yes
      become: yes
-     
+
    - name: Enable service opentsdb
      service:
        name: opentsdb
