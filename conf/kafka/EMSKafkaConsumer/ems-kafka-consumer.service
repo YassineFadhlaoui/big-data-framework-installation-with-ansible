@@ -1,0 +1,13 @@
+[Unit]
+Description=EMS custom kafka consumer to save data into OpenTSDB
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User={{kafka_consumer_user}}
+ExecStart= /usr/bin/java -jar {{framework_base}}/EMSKafkaConsumer/bin/kafka_consumer.jar
+
+[Install]
+WantedBy=multi-user.target

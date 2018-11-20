@@ -1,0 +1,105 @@
+---
+  - name: install and configure a big data framework (Hadoop, Hbase, OpenTSDB and Grafana)
+    hosts: kafka_consumer
+    vars:
+      IP_address: localhost
+      Common_packages: "{{ lookup('env', 'PWD') }}/packages/"
+      Ansible_root: "{{ lookup('env', 'PWD') }}"
+      Framework_location: "/usr/local"
+      Temprory_folder_name: "BigDataFrameworkPackages"
+      OS_systemd_location: "/lib/systemd/system/"
+
+#-----------------------Host names for modular architecture------------------
+      vernemq_host: "172.29.101.178"
+
+      zookeeper_host: "localhost"
+      kafka_host: "172.29.163.23"
+      opentsdb_host: "172.29.163.23"
+      hadoop_host: "172.29.101.191"
+      hbase_host: "172.29.101.191"
+      postgres_host: "172.29.163.23"
+#-----------------------------------------------------------------------------
+
+      JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
+      JAVA_version: jdk1.8.0_191
+      keytool_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/bin/keytool"
+      keystore_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/lib/security/cacerts"
+      keystore_password: "changeit"
+
+      linux_user: "emsuser"
+      user_group: "ems"
+
+      vernemq_config: "conf/vernemq"
+      vernemq_conf_path: "{{Ansible_root}}/{{vernemq_config}}"
+
+
+      hadoop_conf: "conf/hadoop"
+      Hadoop_archive: "hadoop-3.1.1.tar.gz"
+      Uncompressed_hadoop: "hadoop-3.1.1"
+
+      hbase_conf: "conf/hbase"
+      hbase_archive: "hbase-1.4.8-bin.tar.gz"
+      Uncompressed_hbase: "hbase-1.4.8"
+      zookeeper_port_: "2181"
+      zookeeper_quorum: "{{zookeeper_host}}"
+      zookeeper_data: "{{Framework_location}}/zookeeper/data"
+
+      Kafka_archive: "kafka_2.11-2.0.0.tgz"
+      Uncompressed_kafka: "kafka_2.11-2.0.0"
+      kafka_conf: "conf/kafka"
+      kafka_host_address: "{{kafka_host}}"
+      kafka_instance_port: "9092"
+
+      kafka_libs: "{{Framework_location}}/kafka/libs"
+      paho_lib: "mqtt/lib/org.eclipse.paho.client.mqttv3-1.0.2.jar"
+      kafka_connect_lib: "mqtt/lib/kafka-connect-mqtt-1.1-SNAPSHOT.jar"
+      mqtt_properties: "mqtt/mqtt.j2"
+      kafka_mqtt_standalone: "mqtt/connect-standalone.j2"
+      ca_cert: "{{kafka_conf}}/mqtt/ca.crt"
+
+      zookeeper_archive: "zookeeper-3.4.13.tar.gz"
+      Uncompressed_zookeeper: "zookeeper-3.4.13"
+      zookeeper_conf: "conf/zookeeper"
+
+
+      OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
+
+      EMS_consumer_archive: "EMSKafkaConsumer.tar.gz"
+
+
+      grafana_deb_name: "grafana_5.1.4_amd64.deb"
+      grafana_src_local: "{{Common_packages}}/{{grafana_deb_name}}"
+
+
+
+#This is modular tempalte, every minor task is written separately in a role
+
+    roles:
+
+        - role: createTempDir
+          vars:
+            folder_name: "{{Temprory_folder_name}}"
+
+        - role: EMScustomConsumer
+          vars:
+             kafka_consumer_source: "{{Common_packages}}/{{EMS_consumer_archive}}"
+             kafka_consumer_destination: "{{Temprory_folder_name}}"
+             kafka_consumer_package:  "{{EMS_consumer_archive}}"
+             framework_base: "/usr/local"
+             EMSKafkaConsumer_owner: "{{linux_user}}"
+             EMSKafkaConsumer_group: "{{user_group}}"
+             config_location: "conf/kafka/EMSKafkaConsumer"
+             OpenTSDB_host: "{{opentsdb_host}}"
+             OpenTSDB_port: "4242"
+             kafka_server: "{{kafka_host}}"
+             kafka_service_port: "9092"
+             postgres_host_ip: "{{postgres_host}}"
+             postgres_port: "5432"
+             Measurements: "Measurements"
+             Measurements_Val: "MeasurementsVal"
+             Table_str: "MeasurementsStr"
+             postgres_driver: "org.postgresql.Driver"
+             postgres_user: "postgres"
+             postgres_password: "cG781&zwX"
+             Insert_active: "true"
+             kafka_consumer_user: "{{linux_user}}"

@@ -56,3 +56,17 @@
      - "{{config_location}}/KafkaSubscriber.conf"
      - "{{config_location}}/EMSKafkaConsumer.conf"
    become: yes
+
+ - name: "daemonizing the custom kafka consumer"
+   template:
+         src: "{{config_location}}/ems-kafka-consumer.service"
+         dest: "/lib/systemd/system/"
+         owner: "{{EMSKafkaConsumer_owner}}"
+         group: "{{EMSKafkaConsumer_group}}"
+         mode: 0755
+         force: yes
+   become: yes
+
+ - name: "Reloading system daemons"
+   shell: "systemctl daemon-reload"
+   become: yes
