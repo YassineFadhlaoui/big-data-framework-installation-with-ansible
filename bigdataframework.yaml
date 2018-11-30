@@ -24,7 +24,7 @@
       keytool_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/bin/keytool"
       keystore_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/lib/security/cacerts"
       keystore_password: "changeit"
-
+#-----------------------------------------------------------------------
       linux_user: "yassine"
       user_group: "yassine"
 
@@ -163,22 +163,22 @@
 
         #--------------------------End HBase installation--------------------------
         #--------------------------Begin kafka installation------------------------
-        # - role: kafka
-        #   vars:
-        #     framework_base:  "{{Framework_location}}"
-        #     kafka_package: "{{Kafka_archive}}"
-        #     kafka_source: "{{Common_packages}}/{{Kafka_archive}}"
-        #     kafka_destination: "{{Temprory_folder_name}}"
-        #     path_to_kafka: "{{Temprory_folder_name}}"
-        #     Uncompressed_kafka_folder: "{{Uncompressed_kafka}}"
-        #     kafka_owner: "{{linux_user}}"
-        #     kafka_group: "{{user_group}}"
-        #     config_location: "{{Ansible_root}}/{{kafka_conf}}"
-        #     kafka_broker_id: "0"
-        #     kafka_host_ip: "{{kafka_host}}" #address to be used by kafka server
-        #     kafka_service_port: "{{kafka_instance_port}}"
-        #     zookeeper_instance_ip: "{{zookeeper_host}}" #zookeeper installation
-        #     zookeeper_instance_port: "2181"
+        - role: kafka
+          vars:
+            framework_base:  "{{Framework_location}}"
+            kafka_package: "{{Kafka_archive}}"
+            kafka_source: "{{Common_packages}}/{{Kafka_archive}}"
+            kafka_destination: "{{Temprory_folder_name}}"
+            path_to_kafka: "{{Temprory_folder_name}}"
+            Uncompressed_kafka_folder: "{{Uncompressed_kafka}}"
+            kafka_owner: "{{linux_user}}"
+            kafka_group: "{{user_group}}"
+            config_location: "{{Ansible_root}}/{{kafka_conf}}"
+            kafka_broker_id: "0"
+            kafka_host_ip: "{{kafka_host}}" #address to be used by kafka server
+            kafka_service_port: "{{kafka_instance_port}}"
+            zookeeper_instance_ip: "{{zookeeper_host}}" #zookeeper installation
+            zookeeper_instance_port: "2181"
 
 
         #--------------------------End Kafka installation--------------------------

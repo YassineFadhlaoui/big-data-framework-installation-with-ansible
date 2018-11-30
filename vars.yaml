@@ -1,0 +1,87 @@
+#where to find packages to copy (hadoop.tar,gz, java)
+Common_packages: "{{ lookup('env', 'PWD') }}/packages/"
+#The ansible PWD folder (root folder)
+Ansible_root: "{{ lookup('env', 'PWD') }}"
+#where to copy  software
+Framework_location: "/usr/local"
+#a temprory folder that we will use to copy packages on the remote hosts
+Temprory_folder_name: "BigDataFrameworkPackages"
+
+#Path to systemd targets
+OS_systemd_location: "/lib/systemd/system/"
+
+#-----------------------Host names for modular architecture------------------
+#hostname of the vernemq
+vernemq_host: "172.29.101.178"
+#zookeeper host
+zookeeper_host: "localhost"
+#kafka host
+kafka_host: "172.29.163.23"
+#opentsdb host
+opentsdb_host: "172.29.163.23"
+#hadoop host
+hadoop_host: "172.29.101.191"
+#hbase host
+hbase_host: "172.29.101.191"
+#postgres host
+postgres_host: "172.29.163.23"
+#-----------------------------------------------------------------------------
+#Java archive name
+# we use this version because kafka don't support openJDK when using cacerts
+# hadoop don't support JDK version >= 9
+# hbase don't support JDK version <= 7
+#Any version of JDK 8.x should work
+JAVA_archive: "jdk-8u191-linux-x64.tar.gz"
+#the jdk folder name after decompresssing
+JAVA_version: jdk1.8.0_191
+#the path to the keytool command
+keytool_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/bin/keytool"
+#the path to the java default keystore
+# we will use the keytool command to add the
+keystore_path: "{{Framework_location}}/java/{{JAVA_version}}/jre/lib/security/cacerts"
+keystore_password: "changeit"
+
+#Linux user to be used (owner of files and dirs)
+linux_user: "emsuser"
+user_group: "ems"
+
+vernemq_config: "conf/vernemq"
+vernemq_conf_path: "{{Ansible_root}}/{{vernemq_config}}"
+
+
+hadoop_conf: "conf/hadoop"
+Hadoop_archive: "hadoop-3.1.1.tar.gz"
+Uncompressed_hadoop: "hadoop-3.1.1"
+
+hbase_conf: "conf/hbase"
+hbase_archive: "hbase-1.4.8-bin.tar.gz"
+Uncompressed_hbase: "hbase-1.4.8"
+zookeeper_port_: "2181"
+zookeeper_quorum: "{{zookeeper_host}}"
+zookeeper_data: "{{Framework_location}}/zookeeper/data"
+
+Kafka_archive: "kafka_2.11-2.0.0.tgz"
+Uncompressed_kafka: "kafka_2.11-2.0.0"
+kafka_conf: "conf/kafka"
+kafka_host_address: "{{kafka_host}}"
+kafka_instance_port: "9092"
+
+kafka_libs: "{{Framework_location}}/kafka/libs"
+paho_lib: "mqtt/lib/org.eclipse.paho.client.mqttv3-1.0.2.jar"
+kafka_connect_lib: "mqtt/lib/kafka-connect-mqtt-1.1-SNAPSHOT.jar"
+mqtt_properties: "mqtt/mqtt.j2"
+kafka_mqtt_standalone: "mqtt/connect-standalone.j2"
+ca_cert: "{{kafka_conf}}/mqtt/ca.crt"
+
+zookeeper_archive: "zookeeper-3.4.13.tar.gz"
+Uncompressed_zookeeper: "zookeeper-3.4.13"
+zookeeper_conf: "conf/zookeeper"
+
+
+OpenTSDB_deb: "opentsdb-2.3.1_all.deb"
+
+EMS_consumer_archive: "EMSKafkaConsumer.tar.gz"
+
+
+grafana_deb_name: "grafana_5.1.4_amd64.deb"
+grafana_src_local: "{{Common_packages}}/{{grafana_deb_name}}"

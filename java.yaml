@@ -1,0 +1,24 @@
+- name: Playbook to install JAVA
+  hosts: java_hosts
+
+  vars_files:
+    - vars.yaml
+
+
+  roles:
+        # Create a temprory directory to copy packages to it
+        - role: createTempDir
+          vars:
+            folder_name: "{{Temprory_folder_name}}"
+        # Install and configure java we use here the role java
+        # Java will be installed under /usr/local/java/jdk1.8.0_191
+        #--------------------------Begin JAVA installation------------------------
+        - role: java
+          vars:
+            java_package: "{{Common_packages}}/{{JAVA_archive}}" #Where java package is located on local machine (under /packages)
+            path: "{{Temprory_folder_name}}" # temprory path to which java package will be copied to on remote host
+            destination: "{{Framework_location}}" # where java will be installed on remote host
+            java_package_name: "{{JAVA_archive}}"
+            java_version: "{{JAVA_version}}" # jdk name jdk1.8.0_191
+
+        #--------------------------End Java installation--------------------------
